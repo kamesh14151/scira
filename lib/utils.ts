@@ -88,7 +88,6 @@ export function getSearchGroups(searchProvider: SearchProvider = 'exa') {
       icon: ConnectIcon,
       show: true,
       requireAuth: true,
-      requirePro: true,
     },
     {
       id: 'code' as const,
