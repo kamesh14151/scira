@@ -2,10 +2,10 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Scira - AI-powered Search Engine',
-    short_name: 'Scira',
+    name: 'AJ - AI-powered Research Platform',
+    short_name: 'AJ',
     description:
-      'A minimalistic AI-powered search engine that helps you find information on the internet using advanced AI models like GPT-4, Claude, and Grok',
+      'AJ is a free Agentic Research Platform that finds, analyzes, and cites information from the live web.',
     start_url: '/',
     display: 'standalone',
     categories: ['search', 'ai', 'productivity'],

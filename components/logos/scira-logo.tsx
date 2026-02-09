@@ -1,4 +1,30 @@
+import Image from 'next/image';
+
 export function SciraLogo({
+  className,
+  width,
+  height,
+  color = 'currentColor',
+}: {
+  className?: string;
+  width?: number;
+  height?: number;
+  color?: string;
+}) {
+  return (
+    <Image
+      src="/aj-logo.png"
+      alt="AJ Logo"
+      width={width || 32}
+      height={height || 32}
+      className={className}
+      style={{ display: 'block', overflow: 'visible' }}
+    />
+  );
+}
+
+// Legacy SVG logo (preserved for reference)
+function LegacySVGLogo({
   className,
   width,
   height,
