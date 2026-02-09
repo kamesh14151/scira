@@ -1815,7 +1815,7 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(
                   <HugeiconsIcon icon={Crown02Icon} size={16} color="currentColor" strokeWidth={2} />
                 </div>
                 <span>
-                  {'requirePro' in selectedGroupData && selectedGroupData.requirePro
+                  {Boolean('requirePro' in selectedGroupData && selectedGroupData.requirePro)
                     ? 'Unlock with Pro'
                     : 'Unlimited with Pro'}
                 </span>
@@ -1824,7 +1824,7 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(
                 href="/pricing"
                 className="group inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80"
               >
-                {'requirePro' in selectedGroupData && selectedGroupData.requirePro
+                {Boolean('requirePro' in selectedGroupData && selectedGroupData.requirePro)
                   ? 'Explore pricing'
                   : 'Upgrade to Pro'}
                 <ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

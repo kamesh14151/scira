@@ -74,7 +74,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 async function sendMagicLinkEmail(email: string, url: string) {
   try {
     const data = await resend.emails.send({
-      from: 'AJ <noreply@updates.aj>',
+      from: 'AJ <noreply@ajstudioz.co.in>',
       to: [email],
       subject: 'Sign in to AJ',
       html: `
@@ -183,7 +183,7 @@ async function sendMagicLinkEmail(email: string, url: string) {
 async function sendWelcomeEmail(email: string, name?: string) {
   try {
     const data = await resend.emails.send({
-      from: 'AJ <noreply@updates.aj>',
+      from: 'AJ <noreply@ajstudioz.co.in>',
       to: [email],
       subject: 'Welcome to AJ! 🎉',
       html: `
@@ -289,7 +289,7 @@ async function sendWelcomeEmail(email: string, name?: string) {
 async function sendLoginNotificationEmail(email: string, name?: string, loginMethod?: string) {
   try {
     const data = await resend.emails.send({
-      from: 'AJ <noreply@updates.aj>',
+      from: 'AJ <noreply@ajstudioz.co.in>',
       to: [email],
       subject: 'New login to your AJ account',
       html: `
