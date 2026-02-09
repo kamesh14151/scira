@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "eslint",
     "fix": "prettier --write . --ignore-path .gitignore",
-    "knip": "knip"
+    "knip": "knip",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "3.0.2",
