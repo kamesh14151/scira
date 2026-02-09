@@ -67,21 +67,21 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title = 'Scira Chat';
     }
     if (user!.id !== chat.userId) {
-      title = 'Scira Chat';
+      title = 'AJ Chat';
     }
     title = chat.title;
   }
   return {
     title: title,
-    description: 'A search in scira.ai',
+    description: 'A search in AJ',
     openGraph: {
       title: title,
-      url: `https://scira.ai/search/${id}`,
-      description: 'A search in scira.ai',
-      siteName: 'scira.ai',
+      url: `https://scira-jade-one.vercel.app/search/${id}`,
+      description: 'A search in AJ',
+      siteName: 'AJ',
       images: [
         {
-          url: `https://scira.ai/api/og/chat/${id}`,
+          url: `https://scira-jade-one.vercel.app/api/og/chat/${id}`,
           width: 1200,
           height: 630,
         },

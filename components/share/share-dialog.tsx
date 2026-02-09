@@ -42,7 +42,7 @@ export function ShareDialog({
   const [choice, setChoice] = useState<'public' | 'private'>(selectedVisibilityType);
   const [isShared, setIsShared] = useState<boolean>(selectedVisibilityType === 'public');
 
-  const shareUrl = chatId ? `https://scira.ai/search/${chatId}` : '';
+  const shareUrl = chatId ? `https://scira-jade-one.vercel.app/search/${chatId}` : '';
 
   useEffect(() => {
     if (!isOpen) {

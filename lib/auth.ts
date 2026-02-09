@@ -493,13 +493,11 @@ export const auth = betterAuth({
   trustedOrigins: [
     'http://localhost:3000',
     'https://scira-jade-one.vercel.app',
-    'https://scira.ai',
-    'https://www.scira.ai'
+    'https://chat.ajcompany.me'
   ],
   allowedOrigins: [
     'http://localhost:3000',
     'https://scira-jade-one.vercel.app',
-    'https://scira.ai',
-    'https://www.scira.ai'
+    'https://chat.ajcompany.me'
   ],
 });

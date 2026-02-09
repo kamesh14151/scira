@@ -27,7 +27,7 @@ export function ShareIconDialog({
   const [copied, setCopied] = useState(false);
 
   // Generate the share URL
-  const shareUrl = chatId ? `https://scira.ai/search/${chatId}` : '';
+  const shareUrl = chatId ? `https://scira-jade-one.vercel.app/search/${chatId}` : '';
 
   const handleMakePublic = async () => {
     if (currentVisibility === 'public') return;

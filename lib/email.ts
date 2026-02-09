@@ -19,7 +19,7 @@ export async function sendLookoutCompletionEmail({
 }: SendLookoutCompletionEmailParams) {
   try {
     const data = await resend.emails.send({
-      from: 'AJ <noreply@scira.ai>',
+      from: 'AJ <noreply@updates.scira-jade-one.vercel.app>',
       to: [to],
       subject: `Lookout Complete: ${chatTitle}`,
       react: SearchCompletedEmail({

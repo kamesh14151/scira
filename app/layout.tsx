@@ -13,7 +13,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://scira.ai'),
+  metadataBase: new URL('https://scira-jade-one.vercel.app'),
   title: {
     default: 'AJ - Research in speed of thought.',
     template: '%s | AJ',
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description:
     'AJ is a free Agentic Research Platform that finds, analyzes, and cites information from the live web. Fast answers powered by AI.',
   openGraph: {
-    url: 'https://scira.ai',
+    url: 'https://scira-jade-one.vercel.app',
     siteName: 'AJ',
   },
   keywords: [
