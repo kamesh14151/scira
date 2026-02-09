@@ -938,7 +938,7 @@ export const AppSidebar = memo(({ user, onHistoryClick, isProUser }: AppSidebarP
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                      <Avatar className="h-6 w-6 overflow-hidden rounded-full mask-[radial-gradient(white,black)] [-webkit-mask-image:-webkit-radial-gradient(white,black)]">
+                      <Avatar className="h-6 w-6 overflow-hidden rounded-full">
                         <AvatarImage src={user.image || ''} className={cn(blurPersonalInfo && 'blur-sm')} />
                         <AvatarFallback
                           className={cn(
