@@ -344,6 +344,15 @@ const UserProfile = memo(
                   <span>Settings</span>
                 </div>
               </DropdownMenuItem>
+              {/* Admin Dashboard - only show for admin users */}
+              {currentUser && (currentUser as any).role === 'admin' && (
+                <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/admin')}>
+                  <div className="w-full flex items-center gap-2">
+                    <ShieldIcon size={16} />
+                    <span>Admin Dashboard</span>
+                  </div>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem className="cursor-pointer" onClick={() => router.push('/lookout')}>
                 <div className="w-full flex items-center gap-2">
                   <HugeiconsIcon size={16} icon={BinocularsIcon} />
