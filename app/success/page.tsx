@@ -176,7 +176,7 @@ export default function SuccessPage() {
         </div>
 
         {/* Content */}
-        <h1 className="text-3xl font-medium text-foreground mb-3 tracking-tight">Welcome to Scira Pro</h1>
+        <h1 className="text-3xl font-medium text-foreground mb-3 tracking-tight">Welcome to AJ Pro</h1>
         <p className="text-muted-foreground mb-10">Your subscription is now active. Here&apos;s what you&apos;ve unlocked.</p>
 
         {/* Features Grid */}

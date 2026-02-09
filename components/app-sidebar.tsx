@@ -222,20 +222,6 @@ export const AppSidebar = memo(({ user, onHistoryClick, isProUser }: AppSidebarP
       icon: ShieldIcon,
       href: '/privacy-policy',
     },
-    {
-      id: 'github',
-      label: 'GitHub',
-      icon: GithubLogoIcon,
-      href: 'https://git.new/scira',
-      external: true,
-    },
-    {
-      id: 'feedback',
-      label: 'Feedback',
-      icon: BugIcon,
-      href: 'https://scira.userjot.com',
-      external: true,
-    },
   ];
 
   const invalidateRecentChats = () => {
