@@ -252,8 +252,11 @@ enum SearchCategory {
   NEWS = 'news',
   COMPANY = 'company',
   RESEARCH_PAPER = 'research paper',
-  GITHUB = 'github',
+  PDF = 'pdf',
+  TWEET = 'tweet',
+  PERSONAL_SITE = 'personal site',
   FINANCIAL_REPORT = 'financial report',
+  PEOPLE = 'people',
 }
 
 // Search provider strategy interface
@@ -273,7 +276,7 @@ class ExaSearchStrategy implements SearchProviderStrategy {
         type: 'fast',
         ...(category
           ? {
-              category: category as SearchCategory,
+              category: category as any,
             }
           : {}),
         ...(include_domains
