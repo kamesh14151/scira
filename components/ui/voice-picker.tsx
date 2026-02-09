@@ -79,8 +79,11 @@ function resolveColors(): [string, string] {
 function rgbToHex(rgb: string): string | null {
   const match = rgb.match(/\d+/g);
   if (!match || match.length < 3) return null;
-  const [r, g, b] = match.map((v) => Number.parseInt(v, 10));
-  return `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+  // Only use first 3 values (r, g, b) - ignore alpha if present
+  const [r, g, b] = match.slice(0, 3).map((v) => Number.parseInt(v, 10));
+  const hex = `#${[r, g, b].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+  // Validate hex is exactly 7 characters
+  return hex.length === 7 ? hex : null;
 }
 
 interface VoicePickerProps {
