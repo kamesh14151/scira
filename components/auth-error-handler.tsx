@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 import { toast } from 'sonner';
 
-export function AuthErrorHandler() {
+function AuthErrorHandlerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
@@ -36,4 +36,12 @@ export function AuthErrorHandler() {
   }, [error, session, router]);
 
   return null;
+}
+
+export function AuthErrorHandler() {
+  return (
+    <Suspense fallback={null}>
+      <AuthErrorHandlerContent />
+    </Suspense>
+  );
 }
