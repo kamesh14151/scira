@@ -1794,7 +1794,7 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(
             </div>
             <div className="flex items-center gap-2">
               <p className="text-xs font-semibold text-foreground">{selectedGroupData.name} Active</p>
-              {'requirePro' in selectedGroupData && selectedGroupData.requirePro && !isProUser && (
+              {Boolean('requirePro' in selectedGroupData && selectedGroupData.requirePro && !isProUser) && (
                 <span className="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium bg-primary/10 text-primary border border-primary/20">
                   PRO
                 </span>
@@ -2097,7 +2097,7 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(
                     <div className="flex flex-col min-w-0 flex-1 pr-2">
                       <div className="flex items-center gap-1">
                         <span className="font-medium truncate text-[11px] text-foreground">{group.name}</span>
-                        {'requirePro' in group && group.requirePro && !isProUser && (
+                        {Boolean('requirePro' in group && group.requirePro && !isProUser) && (
                           <span className="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-medium bg-primary/10 text-primary border border-primary/20">
                             PRO
                           </span>
@@ -2206,7 +2206,7 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(
                               <div className="flex flex-col min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
                                   <span className="font-medium text-sm text-foreground">{group.name}</span>
-                                  {'requirePro' in group && group.requirePro && !isProUser && (
+                                  {Boolean('requirePro' in group && group.requirePro && !isProUser) && (
                                     <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary border border-primary/20">
                                       PRO
                                     </span>
