@@ -4,13 +4,37 @@ export function SciraLogo({
   className,
   width,
   height,
-  color = 'currentColor',
+  color,
 }: {
   className?: string;
   width?: number;
   height?: number;
   color?: string;
 }) {
+  // If color is provided, render as div (for OG images/PDFs that need SVG)
+  // Otherwise use PNG image
+  if (color) {
+    return (
+      <div 
+        className={className}
+        style={{ 
+          width: width || 32, 
+          height: height || 32,
+          backgroundColor: color === 'currentColor' ? 'transparent' : color,
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: `${(width || 32) * 0.6}px`,
+          fontWeight: 'bold',
+          color: color === 'currentColor' ? 'inherit' : '#fff'
+        }}
+      >
+        AJ
+      </div>
+    );
+  }
+
   return (
     <Image
       src="/aj-logo.png"
