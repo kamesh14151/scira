@@ -4,12 +4,12 @@ import { polarClient } from '@polar-sh/better-auth';
 import { lastLoginMethodClient } from 'better-auth/client/plugins';
 
 export const betterauthClient = createAuthClient({
-  baseURL: process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000',
+  baseURL: process.env.NODE_ENV === 'production' ? (process.env.NEXT_PUBLIC_APP_URL || 'https://chat.ajcompany.me') : 'http://localhost:3000',
   plugins: [dodopaymentsClient()],
 });
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NODE_ENV === 'production' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000',
+  baseURL: process.env.NODE_ENV === 'production' ? (process.env.NEXT_PUBLIC_APP_URL || 'https://chat.ajcompany.me') : 'http://localhost:3000',
   plugins: [polarClient(), lastLoginMethodClient()],
 });
 
