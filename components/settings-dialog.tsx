@@ -1762,7 +1762,6 @@ export function MemoriesSection() {
 
 // Component for Connectors
 export function ConnectorsSection({ user }: { user: any }) {
-  const isProUser = user?.isProUser || false;
   const isMobile = useMediaQuery('(max-width: 768px)');
   const [connectingProvider, setConnectingProvider] = useState<ConnectorProvider | null>(null);
   const [syncingProvider, setSyncingProvider] = useState<ConnectorProvider | null>(null);
@@ -1775,7 +1774,7 @@ export function ConnectorsSection({ user }: { user: any }) {
   } = useQuery({
     queryKey: ['connectors', user?.id],
     queryFn: listUserConnectorsAction,
-    enabled: !!user && isProUser,
+    enabled: !!user,
     staleTime: 1000 * 60 * 2,
   });
 
@@ -1783,7 +1782,7 @@ export function ConnectorsSection({ user }: { user: any }) {
   const connectionStatusQueries = useQuery({
     queryKey: ['connectorsStatus', user?.id],
     queryFn: async () => {
-      if (!user?.id || !isProUser) return {};
+      if (!user?.id) return {};
 
       const statusPromises = Object.keys(CONNECTOR_CONFIGS).map(async (provider) => {
         try {
@@ -1804,7 +1803,7 @@ export function ConnectorsSection({ user }: { user: any }) {
         {} as Record<string, any>,
       );
     },
-    enabled: !!user?.id && isProUser,
+    enabled: !!user?.id,
     staleTime: 1000 * 60 * 2,
   });
 
@@ -1881,45 +1880,13 @@ export function ConnectorsSection({ user }: { user: any }) {
         <HugeiconsIcon icon={InformationCircleIcon} className="h-4 w-4 text-primary" />
         <AlertTitle className="text-foreground">Connectors Available in Beta</AlertTitle>
         <AlertDescription className="text-muted-foreground">
-          Connectors are now available for Pro users! Please note that this feature is in beta and there may be breaking
+          Connectors are now available for all users! Please note that this feature is in beta and there may be breaking
           changes as we continue to improve the experience.
         </AlertDescription>
       </Alert>
 
-      {!isProUser && (
-        <>
-          <div className="border-2 border-dashed border-primary/30 rounded-lg p-6 text-center bg-primary/5">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="p-3 rounded-full bg-primary/10">
-                <HugeiconsIcon
-                  icon={Crown02Icon}
-                  size={32}
-                  color="currentColor"
-                  strokeWidth={1.5}
-                  className="text-primary"
-                />
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-semibold text-lg">Pro Feature</h4>
-                <p className="text-muted-foreground text-sm max-w-md">
-                  Connectors are available for Pro users only. Upgrade to connect your Google Drive, Notion, and
-                  OneDrive accounts.
-                </p>
-              </div>
-              <Button asChild className="mt-4">
-                <Link href="/pricing">
-                  <HugeiconsIcon icon={Crown02Icon} size={16} color="currentColor" strokeWidth={1.5} className="mr-2" />
-                  Upgrade to Pro
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {isProUser && (
-        <div className="space-y-3">
-          {Object.entries(CONNECTOR_CONFIGS).map(([provider, config]) => {
+      <div className="space-y-3">
+        {Object.entries(CONNECTOR_CONFIGS).map(([provider, config]) => {
             const connectionStatus = connectionStatuses[provider]?.status;
             const connection = connections.find((c) => c.provider === provider);
             // A connector is connected if we have a connection record OR if status check confirms it
@@ -2117,7 +2084,6 @@ export function ConnectorsSection({ user }: { user: any }) {
             );
           })}
         </div>
-      )}
 
       <div className={cn('text-center', isMobile ? 'pt-1' : 'pt-2')}>
         <div className="flex items-center gap-2 justify-center">

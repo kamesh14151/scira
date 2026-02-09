@@ -1531,7 +1531,7 @@ const ConnectorSelector: React.FC<ConnectorSelectorProps> = React.memo(
     const { data: connectorsData, isLoading: connectorsLoading } = useQuery({
       queryKey: ['connectors', user?.id],
       queryFn: listUserConnectorsAction,
-      enabled: !!user && isProUser,
+      enabled: !!user,
       staleTime: 1000 * 60 * 2,
     });
 
@@ -1546,14 +1546,14 @@ const ConnectorSelector: React.FC<ConnectorSelectorProps> = React.memo(
 
     // Auto-select all connectors if none selected (must be before early return to maintain hook order)
     React.useEffect(() => {
-      if (isProUser && selectedCount === 0 && availableConnectors.length > 0) {
+      if (selectedCount === 0 && availableConnectors.length > 0) {
         availableConnectors.forEach(([provider]) => {
           onConnectorToggle(provider as ConnectorProvider);
         });
       }
-    }, [isProUser, selectedCount, availableConnectors, onConnectorToggle]);
+    }, [selectedCount, availableConnectors, onConnectorToggle]);
 
-    if (!isProUser || availableConnectors.length === 0) {
+    if (availableConnectors.length === 0) {
       return null;
     }
 
@@ -2000,7 +2000,7 @@ const GroupModeToggle: React.FC<GroupSelectorProps> = React.memo(
           }
 
           // Check if connectors group is selected but no connectors are connected
-          if (selectedGroup.id === 'connectors' && isAuthenticated && onOpenSettings && isProUser) {
+          if (selectedGroup.id === 'connectors' && isAuthenticated && onOpenSettings) {
             try {
               const { listUserConnectorsAction } = await import('@/app/actions');
               const result = await listUserConnectorsAction();

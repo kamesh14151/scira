@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import {
@@ -898,6 +898,8 @@ export const EditableAttachmentsBadge = ({
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="p-0 bg-background dark:bg-background sm:max-w-3xl w-[90vw] max-h-[85vh] overflow-hidden">
+          <DialogTitle className="sr-only">View Attachment</DialogTitle>
+          <DialogDescription className="sr-only">Preview of uploaded image or PDF file</DialogDescription>
           <div className="flex flex-col h-full max-h-[85vh]">
             <header className="p-2 border-b border-border dark:border-border flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -1184,6 +1186,8 @@ export const AttachmentsBadge = ({ attachments }: { attachments: Attachment[] })
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="p-0 bg-background dark:bg-background sm:max-w-3xl w-[90vw] max-h-[85vh] overflow-hidden">
+          <DialogTitle className="sr-only">View Attachment</DialogTitle>
+          <DialogDescription className="sr-only">Preview of uploaded image or PDF file</DialogDescription>
           <div className="flex flex-col h-full max-h-[85vh]">
             <header className="p-2 border-b border-border dark:border-border flex items-center justify-between">
               <div className="flex items-center gap-2">
