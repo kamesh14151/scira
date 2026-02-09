@@ -682,7 +682,7 @@ export function PreferencesSection({
                 items={mergedGroupOrder.filter((id) => dynamicGroups.some((g) => g.id === id))}
                 renderItem={(id) => {
                   const group = dynamicGroups.find((g) => g.id === id)!;
-                  const showProBadge = 'requirePro' in group && group.requirePro;
+                  const showProBadge = Boolean('requirePro' in group && group.requirePro);
                   return (
                     <div className="flex items-center justify-between p-3 rounded-md border bg-card">
                       <div className="flex items-center gap-2 min-w-0">
