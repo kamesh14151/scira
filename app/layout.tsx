@@ -9,6 +9,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from '@/components/ui/sonner';
 import { ClientAnalytics } from '@/components/client-analytics';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { AuthErrorHandler } from '@/components/auth-error-handler';
 
 import { Providers } from './providers';
 
@@ -144,6 +145,7 @@ export default async function RootLayout({
       >
         <NuqsAdapter>
           <Providers>
+            <AuthErrorHandler />
             <SidebarProvider>
               <Toaster position="top-center" />
               {children}

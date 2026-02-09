@@ -44,14 +44,10 @@ export async function GET(request: NextRequest) {
       .from(user)
       .where(sql`${user.createdAt} >= ${sevenDaysAgo}`);
 
-    // Get message usage stats by provider
-    const messagesByProvider = await db
-      .select({
-        provider: messageUsage.provider,
-        count: count(),
-      })
-      .from(messageUsage)
-      .groupBy(messageUsage.provider);
+    // Get total message usage records
+    const [{ totalMessageUsage }] = await db
+      .select({ totalMessageUsage: count() })
+      .from(messageUsage);
 
     // Get most active users
     const topUsers = await db
@@ -76,8 +72,8 @@ export async function GET(request: NextRequest) {
         adminUsers,
         activeSubscriptions,
         recentUsers,
+        totalMessageUsage,
       },
-      messagesByProvider,
       topUsers,
     });
   } catch (error) {
