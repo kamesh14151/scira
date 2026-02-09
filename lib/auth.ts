@@ -497,7 +497,7 @@ async function handleSubscriptionWebhook(payload: any, status: string) {
 }
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || 'https://chat.ajcompany.me',
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://scira-jade-one.vercel.app',
   rateLimit: {
     max: 100,
     window: 60,
@@ -522,44 +522,6 @@ export const auth = betterAuth({
       lookout,
     },
   }),
-  // Lifecycle hooks for sending emails
-  hooks: {
-    after: [
-      {
-        matcher: () => true,
-        handler: async (ctx) => {
-          // Send welcome email on user registration
-          if (ctx.path === '/sign-up/email' && ctx.returned?.user) {
-            const newUser = ctx.returned.user;
-            console.log('🎉 New user registered:', newUser.email);
-            await sendWelcomeEmail(newUser.email, newUser.name);
-          }
-          
-          // Send login notification on sign in
-          if (ctx.path === '/sign-in/email' && ctx.returned?.user) {
-            const loginUser = ctx.returned.user;
-            console.log('🔐 User logged in:', loginUser.email);
-            await sendLoginNotificationEmail(loginUser.email, loginUser.name, 'Email');
-          }
-          
-          // Handle OAuth sign-ups and sign-ins
-          if ((ctx.path === '/sign-in/social' || ctx.path === '/callback/social') && ctx.returned?.user) {
-            const oauthUser = ctx.returned.user;
-            const isNewUser = ctx.context?.isNewUser || !ctx.context?.existingUser;
-            const provider = ctx.body?.provider || ctx.query?.provider || 'Social';
-            
-            if (isNewUser) {
-              console.log('🎉 New OAuth user registered:', oauthUser.email);
-              await sendWelcomeEmail(oauthUser.email, oauthUser.name);
-            } else {
-              console.log(`🔐 OAuth user logged in via ${provider}:`, oauthUser.email);
-              await sendLoginNotificationEmail(oauthUser.email, oauthUser.name, provider);
-            }
-          }
-        },
-      },
-    ],
-  },
   socialProviders: {
     github: {
       clientId: serverEnv.GITHUB_CLIENT_ID,
