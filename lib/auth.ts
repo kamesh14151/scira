@@ -185,12 +185,6 @@ async function handleSubscriptionWebhook(payload: any, status: string) {
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || 'https://scira-jade-one.vercel.app',
-  trustedOrigins: [
-    'http://localhost:3000',
-    'https://scira-jade-one.vercel.app',
-    'https://scira.ai',
-    'https://www.scira.ai'
-  ],
   rateLimit: {
     max: 100,
     window: 60,
@@ -496,6 +490,16 @@ export const auth = betterAuth({
     }),
     nextCookies(),
   ],
-  trustedOrigins: ['http://localhost:3000', 'https://scira.ai', 'https://www.scira.ai'],
-  allowedOrigins: ['http://localhost:3000', 'https://scira.ai', 'https://www.scira.ai'],
+  trustedOrigins: [
+    'http://localhost:3000',
+    'https://scira-jade-one.vercel.app',
+    'https://scira.ai',
+    'https://www.scira.ai'
+  ],
+  allowedOrigins: [
+    'http://localhost:3000',
+    'https://scira-jade-one.vercel.app',
+    'https://scira.ai',
+    'https://www.scira.ai'
+  ],
 });
