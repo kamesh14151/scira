@@ -74,7 +74,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 async function sendMagicLinkEmail(email: string, url: string) {
   try {
     const data = await resend.emails.send({
-      from: 'AJ <noreply@updates.scira-jade-one.vercel.app>',
+      from: 'AJ <noreply@updates.aj>',
       to: [email],
       subject: 'Sign in to AJ',
       html: `
@@ -176,6 +176,207 @@ async function sendMagicLinkEmail(email: string, url: string) {
   } catch (error) {
     console.error('❌ Failed to send magic link email:', error);
     throw error;
+  }
+}
+
+// Helper function to send welcome email on registration
+async function sendWelcomeEmail(email: string, name?: string) {
+  try {
+    const data = await resend.emails.send({
+      from: 'AJ <noreply@updates.aj>',
+      to: [email],
+      subject: 'Welcome to AJ! 🎉',
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+              }
+              .container {
+                max-width: 600px;
+                margin: 40px auto;
+                background: white;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+              }
+              .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 40px 30px;
+                text-align: center;
+              }
+              .header h1 {
+                margin: 0;
+                color: white;
+                font-size: 28px;
+                font-weight: 600;
+              }
+              .content {
+                padding: 40px 30px;
+              }
+              .content p {
+                margin: 0 0 20px;
+                color: #555;
+              }
+              .button {
+                display: inline-block;
+                padding: 14px 32px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white !important;
+                text-decoration: none;
+                border-radius: 6px;
+                font-weight: 600;
+                text-align: center;
+                margin: 20px 0;
+              }
+              .footer {
+                padding: 30px;
+                text-align: center;
+                color: #999;
+                font-size: 12px;
+                border-top: 1px solid #eee;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>Welcome to AJ! 🎉</h1>
+              </div>
+              <div class="content">
+                <p>Hi${name ? ` ${name}` : ''}!</p>
+                <p>Thank you for creating an account with AJ. We're excited to have you on board!</p>
+                <p>AJ is your AI-powered research assistant that helps you find, analyze, and cite information from the live web in seconds.</p>
+                <div style="text-align: center;">
+                  <a href="https://chat.ajcompany.me/new" class="button">Start Searching</a>
+                </div>
+                <p>Get started with:</p>
+                <ul style="color: #555;">
+                  <li>Real-time web search with AI-powered analysis</li>
+                  <li>Academic paper search and citations</li>
+                  <li>Connect your Google Drive, Notion, and OneDrive</li>
+                  <li>Save and manage your research history</li>
+                </ul>
+                <p>If you have any questions, feel free to reach out. Happy researching!</p>
+              </div>
+              <div class="footer">
+                <p>&copy; ${new Date().getFullYear()} AJ. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    console.log('✅ Welcome email sent successfully:', data.data?.id);
+    return { success: true, id: data.data?.id };
+  } catch (error) {
+    console.error('❌ Failed to send welcome email:', error);
+    // Don't throw - we don't want to block registration if email fails
+    return { success: false, error };
+  }
+}
+
+// Helper function to send login notification email
+async function sendLoginNotificationEmail(email: string, name?: string, loginMethod?: string) {
+  try {
+    const data = await resend.emails.send({
+      from: 'AJ <noreply@updates.aj>',
+      to: [email],
+      subject: 'New login to your AJ account',
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+              }
+              .container {
+                max-width: 600px;
+                margin: 40px auto;
+                background: white;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+              }
+              .header {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 30px;
+                text-align: center;
+              }
+              .header h1 {
+                margin: 0;
+                color: white;
+                font-size: 24px;
+                font-weight: 600;
+              }
+              .content {
+                padding: 30px;
+              }
+              .content p {
+                margin: 0 0 15px;
+                color: #555;
+              }
+              .info-box {
+                background: #f8f9fa;
+                border-left: 4px solid #667eea;
+                padding: 15px;
+                margin: 20px 0;
+              }
+              .footer {
+                padding: 20px;
+                text-align: center;
+                color: #999;
+                font-size: 12px;
+                border-top: 1px solid #eee;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <h1>New Login Detected</h1>
+              </div>
+              <div class="content">
+                <p>Hi${name ? ` ${name}` : ''}!</p>
+                <p>We detected a new login to your AJ account.</p>
+                <div class="info-box">
+                  <p style="margin: 0;"><strong>Time:</strong> ${new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'short' })}</p>
+                  ${loginMethod ? `<p style="margin: 5px 0 0;"><strong>Method:</strong> ${loginMethod}</p>` : ''}
+                </div>
+                <p>If this was you, you can safely ignore this email.</p>
+                <p style="color: #dc3545;">If you didn't sign in, please secure your account immediately by changing your password.</p>
+              </div>
+              <div class="footer">
+                <p>&copy; ${new Date().getFullYear()} AJ. All rights reserved.</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    });
+
+    console.log('✅ Login notification email sent successfully:', data.data?.id);
+    return { success: true, id: data.data?.id };
+  } catch (error) {
+    console.error('❌ Failed to send login notification email:', error);
+    // Don't throw - we don't want to block login if email fails
+    return { success: false, error };
   }
 }
 
@@ -321,6 +522,44 @@ export const auth = betterAuth({
       lookout,
     },
   }),
+  // Lifecycle hooks for sending emails
+  hooks: {
+    after: [
+      {
+        matcher: () => true,
+        handler: async (ctx) => {
+          // Send welcome email on user registration
+          if (ctx.path === '/sign-up/email' && ctx.returned?.user) {
+            const newUser = ctx.returned.user;
+            console.log('🎉 New user registered:', newUser.email);
+            await sendWelcomeEmail(newUser.email, newUser.name);
+          }
+          
+          // Send login notification on sign in
+          if (ctx.path === '/sign-in/email' && ctx.returned?.user) {
+            const loginUser = ctx.returned.user;
+            console.log('🔐 User logged in:', loginUser.email);
+            await sendLoginNotificationEmail(loginUser.email, loginUser.name, 'Email');
+          }
+          
+          // Handle OAuth sign-ups and sign-ins
+          if ((ctx.path === '/sign-in/social' || ctx.path === '/callback/social') && ctx.returned?.user) {
+            const oauthUser = ctx.returned.user;
+            const isNewUser = ctx.context?.isNewUser || !ctx.context?.existingUser;
+            const provider = ctx.body?.provider || ctx.query?.provider || 'Social';
+            
+            if (isNewUser) {
+              console.log('🎉 New OAuth user registered:', oauthUser.email);
+              await sendWelcomeEmail(oauthUser.email, oauthUser.name);
+            } else {
+              console.log(`🔐 OAuth user logged in via ${provider}:`, oauthUser.email);
+              await sendLoginNotificationEmail(oauthUser.email, oauthUser.name, provider);
+            }
+          }
+        },
+      },
+    ],
+  },
   socialProviders: {
     github: {
       clientId: serverEnv.GITHUB_CLIENT_ID,
