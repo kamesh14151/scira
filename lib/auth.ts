@@ -497,7 +497,7 @@ async function handleSubscriptionWebhook(payload: any, status: string) {
 }
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://scira-jade-one.vercel.app',
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://chat.ajcompany.me',
   rateLimit: {
     max: 100,
     window: 60,

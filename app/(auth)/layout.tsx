@@ -9,13 +9,13 @@ import { SciraLogo } from '@/components/logos/scira-logo';
 const testimonials = [
   {
     content:
-      'Scira is better than Grok at digging up information from X, its own platform! I asked it 3 different queries to help scrape and find some data points I was interested in about my own account and Scira did much much better with insanely accurate answers!',
+      'AJ is better than Grok at digging up information from X, its own platform! I asked it 3 different queries to help scrape and find some data points I was interested in about my own account and AJ did much much better with insanely accurate answers!',
     author: 'Chris Universe',
     handle: '@chrisuniverseb',
     link: 'https://x.com/chrisuniverseb/status/1943025911043100835',
   },
   {
-    content: 'Scira does a really good job scraping through the reddit mines.',
+    content: 'AJ does a really good job scraping through the reddit mines.',
     author: 'nyaaier',
     handle: '@nyaaier',
     link: 'https://x.com/nyaaier/status/1932810453107065284',
@@ -29,7 +29,7 @@ const testimonials = [
   },
   {
     content:
-      'Read nothing the whole sem and here I am with Scira to top my mid sems! Literally so good to get all the related diagrams, points and topics from the website my professor uses.',
+      'Read nothing the whole sem and here I am with AJ to top my mid sems! Literally so good to get all the related diagrams, points and topics from the website my professor uses.',
     author: 'Rajnandinit',
     handle: '@itsRajnandinit',
     link: 'https://x.com/itsRajnandinit/status/1897896134837682288',
@@ -61,7 +61,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="inline-flex items-center gap-3 mb-16 group">
               <SciraLogo className="size-12 transition-transform duration-300 group-hover:scale-110" />
               <span className="text-5xl font-light tracking-tighter font-be-vietnam-pro text-foreground">
-                scira
+                aj
               </span>
             </Link>
 
@@ -169,7 +169,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <header className="lg:hidden flex items-center justify-center h-16 border-b border-border">
           <Link href="/" className="flex items-center gap-2.5">
             <SciraLogo className="size-6" />
-            <span className="text-2xl font-light tracking-tighter font-be-vietnam-pro">scira</span>
+            <span className="text-2xl font-light tracking-tighter font-be-vietnam-pro">aj</span>
           </Link>
         </header>
 
