@@ -433,6 +433,32 @@ export const AppSidebar = memo(({ user, onHistoryClick, isProUser }: AppSidebarP
             </SidebarMenuItem>
           )}
 
+          {/* Admin Dashboard - Only for admins */}
+          {user && (user as any).role === 'admin' && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                tooltip="Admin Dashboard"
+                className={cn(
+                  'hover:bg-primary/10 transition-all duration-200',
+                  pathname === '/admin' || pathname?.startsWith('/admin/')
+                    ? 'bg-primary/15 text-foreground font-medium'
+                    : '',
+                )}
+              >
+                <Link
+                  prefetch={true}
+                  href="/admin"
+                  onClick={closeMobileSidebar}
+                  className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full"
+                >
+                  <ShieldIcon size={18} weight="regular" />
+                  <span className="group-data-[collapsible=icon]:hidden">Admin</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+
           {/* Tools Section Label */}
           {user && (
             <div className="px-2 py-1.5 group-data-[collapsible=icon]:hidden">
