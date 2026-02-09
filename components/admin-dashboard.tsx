@@ -32,6 +32,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { AdminAnalytics } from '@/components/admin-analytics';
 
 interface Stats {
   totalUsers: number;
@@ -306,17 +307,7 @@ export default function AdminDashboard() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Analytics</CardTitle>
-              <CardDescription>System usage and performance metrics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Advanced analytics features coming soon...
-              </p>
-            </CardContent>
-          </Card>
+          <AdminAnalytics />
         </TabsContent>
       </Tabs>
     </div>

@@ -17,6 +17,8 @@ export type ComprehensiveUserData = {
   emailVerified: boolean;
   name: string;
   image: string | null;
+  role: 'user' | 'admin';
+  banned: boolean;
   createdAt: Date;
   updatedAt: Date;
   isProUser: boolean;
@@ -343,6 +345,8 @@ export async function getComprehensiveUserData(): Promise<ComprehensiveUserData 
         emailVerified: user.emailVerified,
         name: user.name,
         image: user.image,
+        role: user.role,
+        banned: user.banned,
         userCreatedAt: user.createdAt,
         userUpdatedAt: user.updatedAt,
         // Subscription fields (will be null if no subscription)
@@ -493,6 +497,8 @@ export async function getComprehensiveUserData(): Promise<ComprehensiveUserData 
       emailVerified: userData.emailVerified,
       name: userData.name || userData.email.split('@')[0], // Fallback to email prefix if name is null
       image: userData.image,
+      role: userData.role,
+      banned: userData.banned,
       createdAt: userData.userCreatedAt,
       updatedAt: userData.userUpdatedAt,
       isProUser,
