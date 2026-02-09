@@ -215,7 +215,7 @@ export default function PricingTable({ subscriptionDetails, user }: PricingTable
           <div className="flex items-center justify-between h-14 px-6">
             <Link href="/" className="flex items-center gap-2.5 group">
               <SciraLogo className="size-5 transition-transform duration-300 group-hover:scale-110" />
-              <span className="text-lg font-light tracking-tighter font-be-vietnam-pro">scira</span>
+              <span className="text-lg font-light tracking-tighter font-be-vietnam-pro">aj</span>
             </Link>
             <Link
               href="/"
@@ -366,7 +366,7 @@ export default function PricingTable({ subscriptionDetails, user }: PricingTable
               </li>
               <li className="flex items-start gap-3 text-sm text-foreground/80">
                 <span className="w-1 h-1 rounded-full bg-foreground mt-2 shrink-0" />
-                Scira Lookout
+                AJ Lookout
               </li>
             </ul>
 
@@ -504,7 +504,7 @@ export default function PricingTable({ subscriptionDetails, user }: PricingTable
           <div className="flex items-center justify-between h-14">
             <div className="flex items-center gap-3">
               <SciraLogo className="size-4" />
-              <span className="text-xs text-muted-foreground">© {new Date().getFullYear()} Scira</span>
+              <span className="text-xs text-muted-foreground">© {new Date().getFullYear()} AJ</span>
             </div>
             <div className="flex items-center gap-6">
               <Link href="/" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
