@@ -6,12 +6,12 @@ import { eq } from 'drizzle-orm';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
     const body = await request.json();
     const { role, banned, name, email } = body;
 
@@ -44,12 +44,12 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await requireAdmin();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     await db.delete(user).where(eq(user.id, userId));
 
