@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_WIDTH = '16rem';
@@ -255,7 +256,6 @@ function Sidebar({
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar, state, isMobile, openMobile } = useSidebar();
 
-  // On mobile, check if the sheet is open; on desktop, check the sidebar state
   const isOpen = isMobile ? openMobile : state === 'expanded';
 
   return (
@@ -264,28 +264,14 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn('size-8 rounded-md hover:bg-accent', className)}
+      className={cn('size-7', className, isOpen ? 'cursor-w-resize' : 'cursor-e-resize')}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...props}
     >
-      <svg 
-        width="24" 
-        height="24" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path 
-          d="M3 6h18M3 12h18M3 18h18" 
-          stroke="currentColor" 
-          strokeWidth="1.5" 
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      {isOpen ? <PanelRightOpen size={16} className='size-5' strokeWidth={1.5} /> : <PanelLeftOpen size={16} className='size-5' strokeWidth={1.5} />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
