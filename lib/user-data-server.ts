@@ -9,7 +9,6 @@ import { getDodoSubscriptionExpirationInfo } from './db/queries';
 import { getCustomInstructionsByUserId, getUserPreferencesByUserId } from './db/queries';
 import type { CustomInstructions, UserPreferences } from './db/schema';
 import { getDodoProStatus, setDodoProStatus } from './performance-cache';
-import { ensureAdminRole } from './admin-init';
 
 // Single comprehensive user data type
 export type ComprehensiveUserData = {
@@ -372,9 +371,6 @@ export async function getComprehensiveUserData(): Promise<ComprehensiveUserData 
     }
 
     const userData = userWithSubscriptions[0];
-
-    // Ensure admin role for specified admin email
-    await ensureAdminRole(userId, userData.email);
 
     // Fetch Dodo subscription data separately with optimized query
     // IMPORTANT: Use maindb for critical subscription queries to avoid replication lag

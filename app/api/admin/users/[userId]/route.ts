@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { user } from '@/lib/db/schema';
-import { requireAdmin } from '@/lib/admin';
+import { requireAdmin } from '@/lib/admin/server';
 import { eq } from 'drizzle-orm';
 
 export async function PATCH(
