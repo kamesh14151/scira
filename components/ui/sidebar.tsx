@@ -264,7 +264,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn('size-7', className, isOpen ? 'cursor-w-resize' : 'cursor-e-resize')}
+      className={cn('size-8 rounded-md hover:bg-accent', className)}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -272,18 +272,18 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       {...props}
     >
       <svg 
-        width="20" 
-        height="20" 
+        width="24" 
+        height="24" 
         viewBox="0 0 24 24" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        className={cn("transition-transform duration-200", isOpen ? "rotate-180" : "")}
       >
         <path 
-          d="M3 7H21M3 12H21M3 17H21" 
+          d="M3 6h18M3 12h18M3 18h18" 
           stroke="currentColor" 
-          strokeWidth="2" 
+          strokeWidth="1.5" 
           strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
       <span className="sr-only">Toggle Sidebar</span>
