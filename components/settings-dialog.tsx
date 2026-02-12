@@ -1357,8 +1357,10 @@ export function SubscriptionSection({ subscriptionData, isProUser, user }: any) 
   const hasActiveSubscription =
     subscriptionData?.hasSubscription && subscriptionData?.subscription?.status === 'active';
   const hasDodoProStatus = dodoProStatus?.isProUser || (user?.proSource === 'dodo' && user?.isProUser);
-  const isProUserActive = hasActiveSubscription || hasDodoProStatus;
+  const hasAdminGrantedPro = user?.adminGrantedPro || user?.proSource === 'admin';
+  const isProUserActive = hasActiveSubscription || hasDodoProStatus || hasAdminGrantedPro;
   const subscription = subscriptionData?.subscription;
+  const proSource = user?.proSource;
 
   // Check if DodoPayments Pro is expiring soon (within 7 days)
   const getDaysUntilExpiration = () => {
@@ -1385,29 +1387,39 @@ export function SubscriptionSection({ subscriptionData, isProUser, user }: any) 
                 </div>
                 <div>
                   <h3 className={cn('font-semibold', isMobile ? 'text-xs' : 'text-sm')}>
-                    PRO {hasActiveSubscription ? 'Subscription' : 'Membership'}
+                    PRO {hasAdminGrantedPro ? 'Membership' : hasActiveSubscription ? 'Subscription' : 'Membership'}
                   </h3>
                   <p className={cn('opacity-90', isMobile ? 'text-[10px]' : 'text-xs')}>
-                    {hasActiveSubscription
-                      ? subscription?.status === 'active'
-                        ? 'Active'
-                        : subscription?.status || 'Unknown'
-                      : 'Active (DodoPayments)'}
+                    {hasAdminGrantedPro
+                      ? 'Granted by Administrator'
+                      : hasActiveSubscription
+                        ? subscription?.status === 'active'
+                          ? 'Active'
+                          : subscription?.status || 'Unknown'
+                        : 'Active (DodoPayments)'}
                   </p>
                 </div>
               </div>
               <Badge
                 className={cn(
-                  'bg-primary-foreground/20 text-primary-foreground border-0',
+                  hasAdminGrantedPro 
+                    ? 'bg-violet-500/20 text-violet-100 border border-violet-400/30'
+                    : 'bg-primary-foreground/20 text-primary-foreground border-0',
                   isMobile ? 'text-[10px] px-1.5 py-0.5' : 'text-xs',
                 )}
               >
-                ACTIVE
+                {hasAdminGrantedPro ? '👑 ADMIN' : 'ACTIVE'}
               </Badge>
             </div>
             <div className={cn('opacity-90 mb-3', isMobile ? 'text-[11px]' : 'text-xs')}>
               <p className="mb-1">Unlimited access to all premium features</p>
-              {hasActiveSubscription && subscription && (
+              {hasAdminGrantedPro && (
+                <div className="flex gap-4 text-[10px] opacity-75">
+                  <span>Free - No billing required</span>
+                  <span>👑 Lifetime access</span>
+                </div>
+              )}
+              {hasActiveSubscription && subscription && !hasAdminGrantedPro && (
                 <div className="flex gap-4 text-[10px] opacity-75">
                   <span>
                     ${(subscription.amount / 100).toFixed(2)}/{subscription.recurringInterval}
@@ -1415,7 +1427,7 @@ export function SubscriptionSection({ subscriptionData, isProUser, user }: any) 
                   <span>Next billing: {new Date(subscription.currentPeriodEnd).toLocaleDateString()}</span>
                 </div>
               )}
-              {hasDodoProStatus && !hasActiveSubscription && (
+              {hasDodoProStatus && !hasActiveSubscription && !hasAdminGrantedPro && (
                 <div className="space-y-1">
                   <div className="flex gap-4 text-[10px] opacity-75">
                     <span>₹1500/month (auto-renews)</span>
@@ -1429,7 +1441,7 @@ export function SubscriptionSection({ subscriptionData, isProUser, user }: any) 
                 </div>
               )}
             </div>
-            {(hasActiveSubscription || hasDodoProStatus) && (
+            {(hasActiveSubscription || hasDodoProStatus) && !hasAdminGrantedPro && (
               <Button
                 variant="secondary"
                 onClick={handleManageSubscription}
@@ -1609,11 +1621,42 @@ export function SubscriptionSection({ subscriptionData, isProUser, user }: any) 
               </>
             )}
 
+            {/* Show Admin Granted Pro entry if applicable */}
+            {user?.adminGrantedPro && (
+              <div className={cn('bg-gradient-to-r from-violet-500/10 to-purple-500/10 rounded-lg border border-violet-500/20', isMobile ? 'p-2.5' : 'p-3')}>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className={cn('font-medium truncate flex items-center gap-1.5', isMobile ? 'text-xs' : 'text-sm')}>
+                      <Crown02Icon className={cn(isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5', 'text-violet-600 dark:text-violet-400')} />
+                      AJ Pro - Admin Granted
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className={cn('text-muted-foreground', isMobile ? 'text-[10px]' : 'text-xs')}>
+                        Granted by Administrator
+                      </p>
+                      <Badge variant="secondary" className="text-[8px] px-1 py-0 bg-violet-500/20 text-violet-700 dark:text-violet-300 border-violet-500/30">
+                        👑 Admin
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className={cn('font-semibold block text-violet-600 dark:text-violet-400', isMobile ? 'text-xs' : 'text-sm')}>
+                      Free
+                    </span>
+                    <span className={cn('text-muted-foreground', isMobile ? 'text-[9px]' : 'text-xs')}>
+                      active
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Show message if no billing history */}
-            {(!dodoSubscriptions ||
-              (Array.isArray(dodoSubscriptions)
-                ? dodoSubscriptions.length === 0
-                : !dodoSubscriptions.items || dodoSubscriptions.items.length === 0)) &&
+            {!user?.adminGrantedPro &&
+              (!dodoSubscriptions ||
+                (Array.isArray(dodoSubscriptions)
+                  ? dodoSubscriptions.length === 0
+                  : !dodoSubscriptions.items || dodoSubscriptions.items.length === 0)) &&
               (!polarOrders?.result?.items || polarOrders.result.items.length === 0) && (
                 <div
                   className={cn(
