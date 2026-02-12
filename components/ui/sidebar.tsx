@@ -12,7 +12,6 @@ import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import Image from 'next/image';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_WIDTH = '16rem';
@@ -272,13 +271,21 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <Image 
-        src="/sidebar.png" 
-        alt="Toggle Sidebar" 
-        width={20} 
-        height={20} 
+      <svg 
+        width="20" 
+        height="20" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
         className={cn("transition-transform duration-200", isOpen ? "rotate-180" : "")}
-      />
+      >
+        <path 
+          d="M3 7H21M3 12H21M3 17H21" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round"
+        />
+      </svg>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
