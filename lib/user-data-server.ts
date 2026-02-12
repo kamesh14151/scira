@@ -19,10 +19,11 @@ export type ComprehensiveUserData = {
   image: string | null;
   role: 'user' | 'admin';
   banned: boolean;
+  adminGrantedPro: boolean;
   createdAt: Date;
   updatedAt: Date;
   isProUser: boolean;
-  proSource: 'polar' | 'dodo' | 'none';
+  proSource: 'polar' | 'dodo' | 'admin' | 'none';
   subscriptionStatus: 'active' | 'canceled' | 'expired' | 'none';
   polarSubscription?: {
     id: string;
@@ -347,6 +348,7 @@ export async function getComprehensiveUserData(): Promise<ComprehensiveUserData 
         image: user.image,
         role: user.role,
         banned: user.banned,
+        adminGrantedPro: user.adminGrantedPro,
         userCreatedAt: user.createdAt,
         userUpdatedAt: user.updatedAt,
         // Subscription fields (will be null if no subscription)
@@ -460,10 +462,15 @@ export async function getComprehensiveUserData(): Promise<ComprehensiveUserData 
 
     // Determine overall Pro status and source
     let isProUser = false;
-    let proSource: 'polar' | 'dodo' | 'none' = 'none';
+    let proSource: 'polar' | 'dodo' | 'admin' | 'none' = 'none';
     let subscriptionStatus: 'active' | 'canceled' | 'expired' | 'none' = 'none';
 
-    if (activePolarSubscription) {
+    // Check admin-granted pro status first (highest priority)
+    if (userData.adminGrantedPro) {
+      isProUser = true;
+      proSource = 'admin';
+      subscriptionStatus = 'active';
+    } else if (activePolarSubscription) {
       isProUser = true;
       proSource = 'polar';
       subscriptionStatus = 'active';
@@ -499,6 +506,7 @@ export async function getComprehensiveUserData(): Promise<ComprehensiveUserData 
       image: userData.image,
       role: userData.role,
       banned: userData.banned,
+      adminGrantedPro: userData.adminGrantedPro,
       createdAt: userData.userCreatedAt,
       updatedAt: userData.userUpdatedAt,
       isProUser,
