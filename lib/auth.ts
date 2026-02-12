@@ -21,6 +21,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/lib/db';
 import { config } from 'dotenv';
 import { serverEnv } from '@/env/server';
+import { sendNewLoginEmail, sendWelcomeEmail } from '@/lib/email';
 import { checkout, polar, portal, usage, webhooks } from '@polar-sh/better-auth';
 import { Polar } from '@polar-sh/sdk';
 import {
@@ -809,6 +810,44 @@ export const auth = betterAuth({
     }),
     nextCookies(),
   ],
+  events: {
+    signUp: {
+      after: async (user: any, request: any) => {
+        try {
+          console.log('📧 Sending welcome email immediately after sign up');
+          await sendWelcomeEmail({
+            to: user.email,
+            userName: user.name,
+          });
+          console.log('✅ Welcome email sent successfully');
+        } catch (error) {
+          console.error('❌ Failed to send welcome email:', error);
+        }
+      },
+    },
+    signIn: {
+      after: async (user: any, request: any) => {
+        try {
+          console.log('📧 Sending login notification immediately after sign in');
+          const userAgent = request?.headers.get?.('user-agent') || 'Unknown browser';
+          const ip = request?.headers.get?.('x-forwarded-for') || 
+                    request?.headers.get?.('x-real-ip') || 'Unknown IP';
+          
+          await sendNewLoginEmail({
+            to: user.email,
+            userName: user.name,
+            loginTime: new Date().toUTCString(),
+            ipAddress: ip,
+            location: 'Unknown city, IN',
+            browser: userAgent,
+          });
+          console.log('✅ Login notification sent successfully');
+        } catch (error) {
+          console.error('❌ Failed to send login notification:', error);
+        }
+      },
+    },
+  },
   trustedOrigins: [
     'http://localhost:3000',
     'https://chat.ajcompany.me',
