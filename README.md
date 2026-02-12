@@ -16,6 +16,11 @@ A minimalistic AI-powered search engine that helps you find information on the i
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/zaidmukaddam/scira)
 
+## 📚 Documentation
+
+- **[Complete API Keys Setup Guide](./API_KEYS_GUIDE.md)** - Comprehensive guide for all required API keys
+- **[Email Setup Checklist](./EMAIL_SETUP_CHECKLIST.md)** - Configure email notifications
+
 ## Powered By
 
 <div align="center">
