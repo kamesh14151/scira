@@ -109,7 +109,7 @@ const SearchCompletedEmail = (props: SearchCompletedEmailProps) => {
             <Section className="text-center border-t border-solid border-black/30 pt-[32px]">
               <Img src="https://scira-jade-one.vercel.app/icon.png" alt="AJ" className="w-[32px] h-[32px] mx-auto mb-[16px]" />
               <Text className="text-[14px] text-[#6B7280] m-0">
-                Scira AI •{' '}
+                AJ AI •{' '}
                 <a href="https://scira-jade-one.vercel.app" className="text-[#6B7280] no-underline">
                   scira-jade-one.vercel.app
                 </a>
