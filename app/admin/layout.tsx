@@ -5,7 +5,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import { getUser } from '@/lib/auth-utils';
-import { getUserData } from '@/lib/user-data-server';
+import { getComprehensiveUserData } from '@/lib/user-data-server';
 
 export const metadata = {
   title: 'Admin Dashboard - Scira',
@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
   let userData = null;
   
   if (user) {
-    userData = await getUserData(user.id);
+    userData = await getComprehensiveUserData();
   }
 
   return (
