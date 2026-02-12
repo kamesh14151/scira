@@ -117,7 +117,7 @@ export function UsersTable({
   const [_, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const totalPages = Math.ceil(total / limit);
 
