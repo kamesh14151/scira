@@ -4,7 +4,6 @@ import { getChatWithUserById } from '@/lib/db/queries';
 import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
-import { SciraLogo } from '@/components/logos/scira-logo';
 
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -16,6 +15,11 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
     const bgImagePath = path.join(process.cwd(), 'public', 'og-bg.png');
     const bgImageData = await fs.promises.readFile(bgImagePath);
     const bgImageBase64 = `data:image/png;base64,${bgImageData.toString('base64')}`;
+
+    // Read the AJ logo
+    const logoPath = path.join(process.cwd(), 'public', 'aj-logo.png');
+    const logoData = await fs.promises.readFile(logoPath);
+    const logoBase64 = `data:image/png;base64,${logoData.toString('base64')}`;
 
     // Load custom fonts
     const interFontPath = path.join(process.cwd(), 'app/api/og/chat/[id]/fonts', 'Inter-Regular.ttf');
@@ -65,7 +69,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
                 textAlign: 'center',
               }}
             >
-              <SciraLogo width={120} height={120} color="#ffffff" />
+              <img src={logoBase64} width={120} height={120} alt="AJ Logo" style={{ marginBottom: 24 }} />
               <div
                 style={{
                   fontSize: 56,
@@ -77,7 +81,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
                   textShadow: '0 3px 10px rgba(0,0,0,0.45)',
                 }}
               >
-                Scira AI
+                AJ
               </div>
               <div
                 style={{
@@ -195,10 +199,10 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
             >
               {/* Left: brand and tagline */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <SciraLogo width={28} height={28} color="#ffffff" />
+                <img src={logoBase64} width={28} height={28} alt="AJ Logo" />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ fontSize: 18, color: '#ffffff', fontFamily: 'BeVietnamPro', fontWeight: 800 }}>
-                    Scira AI
+                    AJ
                   </div>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.5)' }} />
                   <div style={{ fontSize: 16, color: '#e5e7eb', fontFamily: 'Inter', fontWeight: 600 }}>
