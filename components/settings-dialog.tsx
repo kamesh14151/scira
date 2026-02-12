@@ -1627,7 +1627,13 @@ export function SubscriptionSection({ subscriptionData, isProUser, user }: any) 
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <p className={cn('font-medium truncate flex items-center gap-1.5', isMobile ? 'text-xs' : 'text-sm')}>
-                      <Crown02Icon className={cn(isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5', 'text-violet-600 dark:text-violet-400')} />
+                      <HugeiconsIcon 
+                        icon={Crown02Icon} 
+                        size={isMobile ? 12 : 14} 
+                        color="currentColor" 
+                        className="text-violet-600 dark:text-violet-400"
+                        strokeWidth={1.5}
+                      />
                       AJ Pro - Admin Granted
                     </p>
                     <div className="flex items-center gap-2">
