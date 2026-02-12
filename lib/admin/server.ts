@@ -111,16 +111,6 @@ export async function getAdminUsers(
       );
     }
 
-    // Build ORDER BY clause
-    let orderByColumn = user.createdAt;
-    if (sortBy === "name") orderByColumn = user.name;
-    else if (sortBy === "email") orderByColumn = user.email;
-    else if (sortBy === "role") orderByColumn = user.role;
-    else if (sortBy === "banned") orderByColumn = user.banned;
-    else if (sortBy === "createdAt") orderByColumn = user.createdAt;
-    
-    const orderByClause = sortDirection === "asc" ? asc(orderByColumn) : desc(orderByColumn);
-
     // Get total count
     const countResult = await db
       .select({ count: sql<number>`count(*)` })
@@ -129,8 +119,8 @@ export async function getAdminUsers(
 
     const total = Number(countResult[0]?.count || 0);
 
-    // Get paginated users
-    const users = await db
+    // Build ORDER BY clause - handle different column types properly
+    let usersQuery = db
       .select({
         id: user.id,
         name: user.name,
@@ -143,9 +133,33 @@ export async function getAdminUsers(
       })
       .from(user)
       .where(whereClause)
-      .orderBy(orderByClause)
       .limit(limit)
       .offset(offset);
+
+    // Apply sorting based on field and direction
+    const users = await (async () => {
+      if (sortBy === "name") {
+        return sortDirection === "asc" 
+          ? await usersQuery.orderBy(asc(user.name))
+          : await usersQuery.orderBy(desc(user.name));
+      } else if (sortBy === "email") {
+        return sortDirection === "asc"
+          ? await usersQuery.orderBy(asc(user.email))
+          : await usersQuery.orderBy(desc(user.email));
+      } else if (sortBy === "role") {
+        return sortDirection === "asc"
+          ? await usersQuery.orderBy(asc(user.role))
+          : await usersQuery.orderBy(desc(user.role));
+      } else if (sortBy === "banned") {
+        return sortDirection === "asc"
+          ? await usersQuery.orderBy(asc(user.banned))
+          : await usersQuery.orderBy(desc(user.banned));
+      } else {
+        return sortDirection === "asc"
+          ? await usersQuery.orderBy(asc(user.createdAt))
+          : await usersQuery.orderBy(desc(user.createdAt));
+      }
+    })();
 
     return {
       users: users.map((u) => ({
