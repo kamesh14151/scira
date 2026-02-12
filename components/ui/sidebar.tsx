@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { PanelLeftOpen, PanelRightOpen } from 'lucide-react';
+import Image from 'next/image';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_WIDTH = '16rem';
@@ -272,7 +272,13 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      {isOpen ? <PanelRightOpen size={16} className='size-5' strokeWidth={1.5} /> : <PanelLeftOpen size={16} className='size-5' strokeWidth={1.5} />}
+      <Image 
+        src="/sidebar.png" 
+        alt="Toggle Sidebar" 
+        width={20} 
+        height={20} 
+        className={cn("transition-transform duration-200", isOpen ? "rotate-180" : "")}
+      />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
