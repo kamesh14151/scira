@@ -613,26 +613,35 @@ export const auth = betterAuth({
     signUp: {
       after: async (user: any, request: any) => {
         try {
-          console.log('📧 Sending welcome email immediately after sign up');
-          await sendWelcomeEmail({
+          console.log('🎯 SignUp event triggered for user:', user.email, user.name);
+          console.log('📧 Attempting to send welcome email...');
+          
+          const result = await sendWelcomeEmail({
             to: user.email,
             userName: user.name,
           });
-          console.log('✅ Welcome email sent successfully');
+          
+          if (result.success) {
+            console.log('✅ Welcome email sent successfully! Email ID:', result.id);
+          } else {
+            console.error('❌ Welcome email failed:', result.error);
+          }
         } catch (error) {
-          console.error('❌ Failed to send welcome email:', error);
+          console.error('❌ Exception while sending welcome email:', error);
         }
       },
     },
     signIn: {
       after: async (user: any, request: any) => {
         try {
-          console.log('📧 Sending login notification immediately after sign in');
-          const userAgent = request?.headers.get?.('user-agent') || 'Unknown browser';
-          const ip = request?.headers.get?.('x-forwarded-for') || 
-                    request?.headers.get?.('x-real-ip') || 'Unknown IP';
+          console.log('🎯 SignIn event triggered for user:', user.email, user.name);
+          console.log('📧 Attempting to send login notification...');
           
-          await sendNewLoginEmail({
+          const userAgent = request?.headers?.get?.('user-agent') || 'Unknown browser';
+          const ip = request?.headers?.get?.('x-forwarded-for') || 
+                    request?.headers?.get?.('x-real-ip') || 'Unknown IP';
+          
+          const result = await sendNewLoginEmail({
             to: user.email,
             userName: user.name,
             loginTime: new Date().toUTCString(),
@@ -640,9 +649,14 @@ export const auth = betterAuth({
             location: 'Unknown city, IN',
             browser: userAgent,
           });
-          console.log('✅ Login notification sent successfully');
+          
+          if (result.success) {
+            console.log('✅ Login notification sent successfully! Email ID:', result.id);
+          } else {
+            console.error('❌ Login notification failed:', result.error);
+          }
         } catch (error) {
-          console.error('❌ Failed to send login notification:', error);
+          console.error('❌ Exception while sending login notification:', error);
         }
       },
     },

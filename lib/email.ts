@@ -6,6 +6,12 @@ import WelcomeEmail from '@/components/emails/welcome';
 
 const resend = serverEnv.RESEND_API_KEY ? new Resend(serverEnv.RESEND_API_KEY) : null;
 
+if (!resend) {
+  console.warn('⚠️⚠️⚠️ RESEND_API_KEY not configured! Email notifications will NOT be sent. ⚠️⚠️⚠️');
+} else {
+  console.log('✅ Resend email service initialized successfully');
+}
+
 interface SendLookoutCompletionEmailParams {
   to: string;
   chatTitle: string;
