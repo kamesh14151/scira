@@ -112,10 +112,14 @@ export async function getAdminUsers(
     }
 
     // Build ORDER BY clause
-    const orderByClause =
-      sortDirection === "asc"
-        ? asc(user[sortBy as keyof typeof user] || user.createdAt)
-        : desc(user[sortBy as keyof typeof user] || user.createdAt);
+    let orderByColumn = user.createdAt;
+    if (sortBy === "name") orderByColumn = user.name;
+    else if (sortBy === "email") orderByColumn = user.email;
+    else if (sortBy === "role") orderByColumn = user.role;
+    else if (sortBy === "banned") orderByColumn = user.banned;
+    else if (sortBy === "createdAt") orderByColumn = user.createdAt;
+    
+    const orderByClause = sortDirection === "asc" ? asc(orderByColumn) : desc(orderByColumn);
 
     // Get total count
     const countResult = await db
