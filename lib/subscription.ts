@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { subscription, dodosubscription } from './db/schema';
+import { subscription, dodosubscription, user } from './db/schema';
 import { getReadReplica, maindb } from './db';
 import { auth } from './auth';
 import { headers } from 'next/headers';
@@ -116,13 +116,21 @@ async function checkDodoSubscriptionProStatus(userId: string): Promise<boolean> 
   }
 }
 
-// Combined function to check Pro status from both Polar and Dodo Subscriptions
+// Combined function to check Pro status from both Polar, Dodo, and Admin-granted access
 async function getComprehensiveProStatus(
   userId: string,
-): Promise<{ isProUser: boolean; source: 'polar' | 'dodo' | 'none' }> {
+): Promise<{ isProUser: boolean; source: 'polar' | 'dodo' | 'admin' | 'none' }> {
   try {
     const readDb = getReadReplica();
-    // Check Polar subscriptions first
+    
+    // First check if admin granted pro status
+    const userData = await readDb.select({ adminGrantedPro: user.adminGrantedPro }).from(user).where(eq(user.id, userId)).limit(1);
+    if (userData[0]?.adminGrantedPro) {
+      console.log('👑 Admin-granted Pro status for user:', userId);
+      return { isProUser: true, source: 'admin' };
+    }
+    
+    // Check Polar subscriptions
     const userSubscriptions = await readDb.select().from(subscription).where(eq(subscription.userId, userId));
     const activeSubscription = userSubscriptions.find((sub) => sub.status === 'active');
 

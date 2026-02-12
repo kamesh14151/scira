@@ -78,8 +78,16 @@ import {
   InformationCircleIcon,
   Rocket01Icon,
 } from '@hugeicons/core-free-icons';
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
-import { LineChart, Line, Area, AreaChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  ContributionGraph,
+  ContributionGraphCalendar,
+  ContributionGraphBlock,
+  ContributionGraphFooter,
+  ContributionGraphLegend,
+  ContributionGraphTotalCount,
+  type Activity,
+} from '@/components/ui/kibo-ui/contribution-graph';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CONNECTOR_CONFIGS, CONNECTOR_ICONS, type ConnectorProvider } from '@/lib/connectors';
 
 interface SettingsDialogProps {
@@ -822,25 +830,10 @@ type TimePeriod = '7d' | '30d' | '12m';
 
 export function UsageSection({ user }: any) {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>('7d');
 
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const isTablet = useMediaQuery('(min-width: 769px) and (max-width: 1024px)');
   const isProUser = user?.isProUser;
-  
-  // Convert time period to days
-  const daysWindow = useMemo(() => {
-    switch (timePeriod) {
-      case '7d':
-        return 7;
-      case '30d':
-        return 30;
-      case '12m':
-        return 365; // 12 months
-      default:
-        return 7;
-    }
-  }, [timePeriod]);
+  const monthsWindow = isMobile ? 6 : 12;
 
   const {
     data: usageData,
@@ -871,8 +864,8 @@ export function UsageSection({ user }: any) {
     isLoading: historicalLoading,
     refetch: refetchHistoricalData,
   } = useQuery({
-    queryKey: ['historicalUsage', user?.id, daysWindow],
-    queryFn: () => getHistoricalUsage(user, daysWindow),
+    queryKey: ['historicalUsage', user?.id, monthsWindow],
+    queryFn: () => getHistoricalUsage(user, monthsWindow * 30),
     enabled: !!user,
     staleTime: 1000 * 60 * 10,
   });
@@ -880,54 +873,49 @@ export function UsageSection({ user }: any) {
   const searchCount = usageData?.searchCount;
   const extremeSearchCount = usageData?.extremeSearchCount;
 
-  // Transform historical data for chart
-  const chartData = useMemo(() => {
-    if (!historicalUsageData || historicalUsageData.length === 0) return [];
+  // Generate loading stars data that matches real data structure
+  const loadingStars = useMemo(() => {
+    if (!historicalLoading) return [];
 
-    // For 12m, group by week; for others, use daily data
-    if (timePeriod === '12m') {
-      // Group by week for 12 months view
-      const weeklyData = new Map<string, { total: number; count: number }>();
-      
-      historicalUsageData.forEach((item) => {
-        const date = new Date(item.date);
-        const weekStart = new Date(date);
-        weekStart.setDate(date.getDate() - date.getDay()); // Start of week (Sunday)
-        const weekKey = weekStart.toISOString().split('T')[0];
-        
-        const existing = weeklyData.get(weekKey) || { total: 0, count: 0 };
-        weeklyData.set(weekKey, {
-          total: existing.total + item.count,
-          count: existing.count + 1,
-        });
+    const months = monthsWindow;
+    const totalDays = months * 30;
+    const futureDays = Math.min(15, Math.floor(totalDays * 0.08));
+    const pastDays = totalDays - futureDays - 1;
+
+    const today = new Date();
+    const endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + futureDays);
+
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - pastDays);
+
+    // Generate complete dataset like real getHistoricalUsage
+    const completeData: Activity[] = [];
+    for (let i = 0; i < totalDays; i++) {
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
+      const dateKey = currentDate.toISOString().split('T')[0];
+
+      // Randomly light up some dots for star effect
+      const shouldLight = Math.random() > 0.85; // 15% chance
+      const count = shouldLight ? Math.floor(Math.random() * 10) + 1 : 0;
+
+      let level: 0 | 1 | 2 | 3 | 4;
+      if (count === 0) level = 0;
+      else if (count <= 3) level = 1;
+      else if (count <= 7) level = 2;
+      else if (count <= 12) level = 3;
+      else level = 4;
+
+      completeData.push({
+        date: dateKey,
+        count,
+        level,
       });
-
-      return Array.from(weeklyData.entries())
-        .map(([date, data]) => ({
-          date,
-          messages: data.total,
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-    } else {
-      // Use daily data for 7d and 30d
-      return historicalUsageData
-        .map((item) => ({
-          date: item.date,
-          messages: item.count,
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
     }
-  }, [historicalUsageData, timePeriod]);
 
-  const chartConfig: ChartConfig = {
-    messages: {
-      label: 'Messages',
-      theme: {
-        light: 'oklch(0.4341 0.0392 41.9938)', // Primary color for light mode
-        dark: 'oklch(0.9247 0.0524 66.1732)', // Lighter primary for dark mode
-      },
-    },
-  };
+    return completeData;
+  }, [historicalLoading, monthsWindow]);
 
   const handleRefreshUsage = async () => {
     try {
@@ -1069,140 +1057,195 @@ export function UsageSection({ user }: any) {
       )}
 
       {!usageLoading && (
-        <div className={cn('space-y-2 w-full', isMobile && !isProUser ? 'pb-4' : '')}>
-          <div className="flex items-center justify-between">
+        <div className={cn('space-y-2', isMobile && !isProUser ? 'pb-4' : '')}>
           <h4 className={cn('font-semibold text-muted-foreground', isMobile ? 'text-[11px]' : 'text-xs')}>
-              Activity
+            Activity (Past {monthsWindow} Months)
           </h4>
-            <ButtonGroup orientation="horizontal" className="h-7">
-              <Button
-                variant={timePeriod === '7d' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimePeriod('7d')}
-                className={cn('h-7 px-2 text-[10px]', isMobile && 'px-1.5')}
-              >
-                7d
-              </Button>
-              <Button
-                variant={timePeriod === '30d' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimePeriod('30d')}
-                className={cn('h-7 px-2 text-[10px]', isMobile && 'px-1.5')}
-              >
-                30d
-              </Button>
-              <Button
-                variant={timePeriod === '12m' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setTimePeriod('12m')}
-                className={cn('h-7 px-2 text-[10px]', isMobile && 'px-1.5')}
-              >
-                12m
-              </Button>
-            </ButtonGroup>
-          </div>
-          <div className={cn('bg-muted/50 dark:bg-card rounded-lg p-3 w-full')}>
+          <div className={cn('bg-muted/50 dark:bg-card rounded-lg p-3')}>
             {historicalLoading ? (
-              <div className="h-[200px] flex items-center justify-center opacity-60">
-                <div className="text-center space-y-2">
-                  <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
-                  <p className={cn('text-muted-foreground', isMobile ? 'text-[11px]' : 'text-xs')}>
-                    Loading activity data...
-                  </p>
-                </div>
-              </div>
-            ) : chartData && chartData.length > 0 ? (
-              <div className="w-full min-w-0 overflow-hidden">
-                <ChartContainer config={chartConfig} className="h-[200px] w-full min-w-0 flex-col! justify-start!">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 5, right: 5, left: isMobile ? 0 : 5, bottom: 5 }}>
-                    <defs>
-                      <linearGradient id="messagesGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--color-messages)" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="var(--color-messages)" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted-foreground))" opacity={0.1} />
-                    <XAxis
-                      dataKey="date"
-                      tickFormatter={(value, index) => {
-                        const date = new Date(value);
-                        let labelInterval: number;
-                        let format: (d: Date) => string;
-                        
-                        if (timePeriod === '7d') {
-                          // Show day names for 7d view
-                          labelInterval = Math.max(1, Math.floor(chartData.length / 5));
-                          format = (d) => d.toLocaleDateString('en-US', { weekday: 'short' });
-                        } else if (timePeriod === '30d') {
-                          // Show month and day for 30d view
-                          labelInterval = Math.max(1, Math.floor(chartData.length / 5));
-                          format = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        } else {
-                          // Show month for 12m view
-                          labelInterval = Math.max(1, Math.floor(chartData.length / 6));
-                          format = (d) => d.toLocaleDateString('en-US', { month: 'short' });
-                        }
-                        
-                        // Only show label at intervals, first, and last
-                        if (index % labelInterval !== 0 && index !== 0 && index !== chartData.length - 1) {
-                          return '';
-                        }
-                        
-                        return format(date);
+              <TooltipProvider>
+                <ContributionGraph
+                  data={loadingStars}
+                  blockSize={isMobile ? 10 : 12}
+                  blockMargin={isMobile ? 3 : 4}
+                  fontSize={isMobile ? 9 : 12}
+                  labels={{
+                    totalCount: 'Loading activity data...',
+                    legend: {
+                      less: 'Less',
+                      more: 'More',
+                    },
+                  }}
+                  className="w-full opacity-60"
+                >
+                  <ContributionGraphCalendar
+                    hideMonthLabels={false}
+                    className={cn('text-muted-foreground', isMobile ? 'text-[9px]' : 'text-xs')}
+                  >
+                    {({ activity, dayIndex, weekIndex }) => (
+                      <ContributionGraphBlock
+                        key={`${weekIndex}-${dayIndex}-loading`}
+                        activity={activity}
+                        dayIndex={dayIndex}
+                        weekIndex={weekIndex}
+                        className={cn(
+                          'data-[level="0"]:fill-muted/40',
+                          'data-[level="1"]:fill-primary/30',
+                          'data-[level="2"]:fill-primary/50',
+                          'data-[level="3"]:fill-primary/70',
+                          'data-[level="4"]:fill-primary/90',
+                          activity.level > 0 && 'animate-pulse',
+                        )}
+                      />
+                    )}
+                  </ContributionGraphCalendar>
+                  <ContributionGraphFooter
+                    className={cn('pt-2 flex-col sm:flex-row', isMobile ? 'gap-1.5 items-start' : 'gap-2 items-center')}
+                  >
+                    <ContributionGraphTotalCount
+                      className={cn('text-muted-foreground', isMobile ? 'text-[9px] mb-1' : 'text-xs')}
+                    />
+                    <ContributionGraphLegend className={cn('text-muted-foreground', isMobile ? 'flex-shrink-0' : '')}>
+                      {({ level }) => (
+                        <svg height={isMobile ? 10 : 12} width={isMobile ? 10 : 12}>
+                          <rect
+                            className={cn(
+                              'stroke-[1px] stroke-border/50',
+                              'data-[level="0"]:fill-muted/40',
+                              'data-[level="1"]:fill-primary/30',
+                              'data-[level="2"]:fill-primary/50',
+                              'data-[level="3"]:fill-primary/70',
+                              'data-[level="4"]:fill-primary/90',
+                            )}
+                            data-level={level}
+                            height={isMobile ? 10 : 12}
+                            rx={2}
+                            ry={2}
+                            width={isMobile ? 10 : 12}
+                          />
+                        </svg>
+                      )}
+                    </ContributionGraphLegend>
+                  </ContributionGraphFooter>
+                </ContributionGraph>
+              </TooltipProvider>
+            ) : historicalUsageData && historicalUsageData.length > 0 ? (
+              <TooltipProvider>
+                <ContributionGraph
+                  data={historicalUsageData}
+                  blockSize={isMobile ? 10 : 12}
+                  blockMargin={isMobile ? 3 : 4}
+                  fontSize={isMobile ? 9 : 12}
+                  labels={{
+                    totalCount: '{{count}} total messages in {{year}}',
+                    legend: {
+                      less: 'Less',
+                      more: 'More',
+                    },
+                  }}
+                  className="w-full"
+                >
+                  <ContributionGraphCalendar
+                    hideMonthLabels={false}
+                    className={cn('text-muted-foreground', isMobile ? 'text-[9px]' : 'text-xs')}
+                  >
+                    {({ activity, dayIndex, weekIndex }) => (
+                      <Tooltip key={`${weekIndex}-${dayIndex}`}>
+                        <TooltipTrigger asChild>
+                          <g className="cursor-help">
+                            <ContributionGraphBlock
+                              activity={activity}
+                              dayIndex={dayIndex}
+                              weekIndex={weekIndex}
+                              className={cn(
+                                'data-[level="0"]:fill-muted',
+                                'data-[level="1"]:fill-primary/20',
+                                'data-[level="2"]:fill-primary/40',
+                                'data-[level="3"]:fill-primary/60',
+                                'data-[level="4"]:fill-primary',
+                              )}
+                            />
+                          </g>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-center">
+                            <p className="font-medium">
+                              {activity.count} {activity.count === 1 ? 'message' : 'messages'}
+                            </p>
+                            <p className="text-xs text-muted">
+                              {new Date(activity.date).toLocaleDateString('en-US', {
+                                weekday: 'long',
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </ContributionGraphCalendar>
+                  <ContributionGraphFooter
+                    className={cn('pt-2 flex-col sm:flex-row', isMobile ? 'gap-1.5 items-start' : 'gap-2 items-center')}
+                  >
+                    <ContributionGraphTotalCount
+                      className={cn('text-muted-foreground', isMobile ? 'text-[9px] mb-1' : 'text-xs')}
+                    />
+                    <ContributionGraphLegend className={cn('text-muted-foreground', isMobile ? 'flex-shrink-0' : '')}>
+                      {({ level }) => {
+                        const getTooltipText = (level: number) => {
+                          switch (level) {
+                            case 0:
+                              return 'No messages';
+                            case 1:
+                              return '1-3 messages';
+                            case 2:
+                              return '4-7 messages';
+                            case 3:
+                              return '8-12 messages';
+                            case 4:
+                              return '13+ messages';
+                            default:
+                              return `${level} messages`;
+                          }
+                        };
+
+                        return (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <svg height={isMobile ? 10 : 12} width={isMobile ? 10 : 12} className="cursor-help">
+                                <rect
+                                  className={cn(
+                                    'stroke-[1px] stroke-border/50',
+                                    'data-[level="0"]:fill-muted',
+                                    'data-[level="1"]:fill-primary/20',
+                                    'data-[level="2"]:fill-primary/40',
+                                    'data-[level="3"]:fill-primary/60',
+                                    'data-[level="4"]:fill-primary',
+                                  )}
+                                  data-level={level}
+                                  height={isMobile ? 10 : 12}
+                                  rx={2}
+                                  ry={2}
+                                  width={isMobile ? 10 : 12}
+                                />
+                              </svg>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">{getTooltipText(level)}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
                       }}
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 9 : 11 }}
-                      tickLine={{ stroke: 'hsl(var(--muted-foreground))' }}
-                      minTickGap={isMobile ? 15 : 25}
-                      interval={0}
-                      angle={isMobile ? -45 : 0}
-                      textAnchor={isMobile ? 'end' : 'middle'}
-                      height={isMobile ? 50 : 30}
-                    />
-                    <YAxis
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 10 : 12 }}
-                      tickLine={{ stroke: 'hsl(var(--muted-foreground))' }}
-                      width={isMobile ? 30 : 40}
-                    />
-                    <ChartTooltip
-                      content={
-                        <ChartTooltipContent
-                          labelFormatter={(value) => {
-                            const date = new Date(value);
-                            if (timePeriod === '12m') {
-                              const weekEnd = new Date(date);
-                              weekEnd.setDate(date.getDate() + 6);
-                              return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-                            }
-                            return date.toLocaleDateString('en-US', {
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            });
-                          }}
-                          formatter={(value) => {
-                            return [`${value}`, ' Messages'] as [string, string];
-                          }}
-                        />
-                      }
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="messages"
-                      stroke="var(--color-messages)"
-                      strokeWidth={1.5}
-                      fill="url(#messagesGradient)"
-                      dot={false}
-                      activeDot={{ r: 4, stroke: 'var(--color-messages)', strokeWidth: 1.5, fill: 'var(--color-messages)' }}
-                    />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </div>
+                    </ContributionGraphLegend>
+                  </ContributionGraphFooter>
+                </ContributionGraph>
+              </TooltipProvider>
             ) : (
-              <div className="h-[200px] flex items-center justify-center">
-                <p className={cn('text-muted-foreground', isMobile ? 'text-[11px]' : 'text-xs')}>No activity data</p>
+              <div className="flex items-center justify-center py-8">
+                <p className={cn('text-muted-foreground', isMobile ? 'text-[11px]' : 'text-xs')}>
+                  No activity data available
+                </p>
               </div>
             )}
           </div>

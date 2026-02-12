@@ -6,10 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Edit2, Trash2, ShieldCheck, User, Lock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { ArrowLeft, Edit2, Trash2, ShieldCheck, User, Lock, Crown } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface UserDetailProps {
   user: {
@@ -21,6 +23,7 @@ interface UserDetailProps {
     createdAt: Date;
     emailVerified: boolean;
     image: string | null;
+    adminGrantedPro?: boolean;
   };
   currentUserId: string;
   userAccountInfo?: any;
@@ -36,6 +39,37 @@ export function UserDetail({ user, currentUserId, userStatsSlot, view }: UserDet
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(user.name);
   const [editedEmail, setEditedEmail] = useState(user.email);
+  const [adminGrantedPro, setAdminGrantedPro] = useState(user.adminGrantedPro || false);
+  const [isTogglingPro, setIsTogglingPro] = useState(false);
+
+  const handleToggleProStatus = async (enabled: boolean) => {
+    setIsTogglingPro(true);
+    try {
+      const response = await fetch(`/api/admin/users/${user.id}/pro-status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ adminGrantedPro: enabled }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update pro status');
+      }
+
+      const data = await response.json();
+      setAdminGrantedPro(enabled);
+      toast.success(data.message);
+      
+      // Refresh the page to update all data
+      window.location.reload();
+    } catch (error) {
+      console.error('Error toggling pro status:', error);
+      toast.error('Failed to update pro status');
+    } finally {
+      setIsTogglingPro(false);
+    }
+  };
 
   return (
     <div className="flex-1 w-full p-6">
@@ -165,6 +199,37 @@ export function UserDetail({ user, currentUserId, userStatsSlot, view }: UserDet
                     {user.banned ? "Banned" : "Active"}
                     <Edit2 className="h-3 w-3 ml-1" />
                   </Badge>
+                </div>
+              </div>
+
+              <div className="border-t" />
+
+              {/* Pro Subscription Section */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Crown className="h-4 w-4 text-muted-foreground" />
+                  <Label className="text-sm font-semibold">Pro Subscription</Label>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium">Admin Grant Pro Access</p>
+                    <p className="text-xs text-muted-foreground">
+                      Manually grant or revoke pro subscription for this user
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={adminGrantedPro}
+                      onCheckedChange={handleToggleProStatus}
+                      disabled={isTogglingPro}
+                    />
+                    {adminGrantedPro && (
+                      <Badge variant="default" className="text-xs">
+                        <Crown className="h-3 w-3 mr-1" />
+                        Pro
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
 

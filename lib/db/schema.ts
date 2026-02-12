@@ -12,6 +12,7 @@ export const user = pgTable('user', {
   image: text('image'),
   role: varchar('role', { enum: ['user', 'admin'] }).default('user').notNull(),
   banned: boolean('banned').default(false).notNull(),
+  adminGrantedPro: boolean('admin_granted_pro').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()

@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getUser } from "@/lib/admin/server";
 import { UserDetail } from "@/components/user/user-detail/user-detail";
+import { UserActivityStats } from "@/components/user/user-detail/user-activity-stats";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/admin/server";
@@ -41,7 +42,7 @@ export default async function UserDetailPage({ params }: PageProps) {
       userAccountInfo={null}
       userStatsSlot={
         <Suspense fallback={<UserStatsCardLoaderSkeleton />}>
-          <div>User Stats</div>
+          <UserActivityStats userId={user.id} userEmail={user.email} />
         </Suspense>
       }
       view="admin"

@@ -26,27 +26,27 @@ export async function GET(request: NextRequest) {
     
     switch (type) {
       case 'welcome':
-        result = await sendWelcomeEmail(email, name);
+        result = await sendWelcomeEmail({ to: email, userName: name });
         break;
         
       case 'login':
-        result = await sendNewLoginEmail(
-          email, 
-          name,
-          'Test Device',
-          'Test Location',
-          new Date().toISOString()
-        );
+        result = await sendNewLoginEmail({
+          to: email,
+          userName: name,
+          loginTime: new Date().toISOString(),
+          ipAddress: '127.0.0.1',
+          location: 'Test Location',
+          browser: 'Test Browser',
+        });
         break;
         
       case 'lookout':
-        result = await sendLookoutCompletionEmail(
-          email,
-          name,
-          'Test Search Query',
-          5,
-          'https://scira.ai/search/test-id'
-        );
+        result = await sendLookoutCompletionEmail({
+          to: email,
+          chatTitle: 'Test Search Query',
+          assistantResponse: 'This is a test completion message. Your search results are ready!',
+          chatId: 'test-id-123',
+        });
         break;
         
       default:
