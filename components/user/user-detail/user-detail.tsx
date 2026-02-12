@@ -25,13 +25,17 @@ interface UserDetailProps {
   view: "admin" | "public";
 }
 
-export function UserDetail({ user, currentUserId, userStatsSlot }: UserDetailProps) {
+export function UserDetail({ user, currentUserId, userStatsSlot, view }: UserDetailProps) {
   const getUserAvatar = () => {
     return user.image || `https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`;
   };
 
+  const containerClasses = view === "admin" 
+    ? "w-full px-6 lg:px-8 py-6 space-y-6"
+    : "container mx-auto p-4 md:p-6 space-y-6 max-w-5xl";
+
   return (
-    <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-5xl">
+    <div className={containerClasses}>
       <div className="flex items-center gap-4">
         <Link href="/admin/users">
           <Button variant="ghost" size="sm" className="gap-2">
