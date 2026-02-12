@@ -1,16 +1,16 @@
 import { PropsWithChildren } from 'react';
-import { requireAdmin } from '@/lib/admin/server';
+import { isAdmin } from '@/lib/admin';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
-  title: 'Admin Dashboard - Scira',
+  title: 'Admin Dashboard - AJ',
   description: 'Admin dashboard for managing users and system settings',
 };
 
 export default async function AdminLayout({ children }: PropsWithChildren) {
-  try {
-    await requireAdmin();
-  } catch {
+  const admin = await isAdmin();
+
+  if (!admin) {
     redirect('/');
   }
 
