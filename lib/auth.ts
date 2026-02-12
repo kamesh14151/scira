@@ -1,4 +1,4 @@
-import { betterAuth } from 'better-auth/minimal';
+import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { lastLoginMethod, magicLink } from 'better-auth/plugins';
 import {
