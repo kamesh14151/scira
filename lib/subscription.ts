@@ -443,7 +443,7 @@ export async function getDodoSubscriptionExpirationDate(): Promise<Date | null> 
 // Export the comprehensive pro status function for UI components that need to know the source
 export async function getProStatusWithSource(): Promise<{
   isProUser: boolean;
-  source: 'polar' | 'dodo' | 'none';
+  source: 'polar' | 'dodo' | 'admin' | 'none';
   expiresAt?: Date;
 }> {
   try {
