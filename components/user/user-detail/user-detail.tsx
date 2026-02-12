@@ -30,22 +30,19 @@ export function UserDetail({ user, currentUserId, userStatsSlot, view }: UserDet
     return user.image || `https://api.dicebear.com/7.x/initials/svg?seed=${user.name}`;
   };
 
-  const containerClasses = view === "admin" 
-    ? "w-full px-6 lg:px-8 py-6 space-y-6"
-    : "container mx-auto p-4 md:p-6 space-y-6 max-w-5xl";
-
   return (
-    <div className={containerClasses}>
-      <div className="flex items-center gap-4">
-        <Link href="/admin/users">
-          <Button variant="ghost" size="sm" className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Users
-          </Button>
-        </Link>
-      </div>
+    <div className="flex-1 w-full p-6">
+      <div className="space-y-6 max-w-5xl">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/users">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Users
+            </Button>
+          </Link>
+        </div>
 
-      <Card>
+        <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row items-start gap-4">
             <Avatar className="h-20 w-20 shrink-0">
@@ -102,6 +99,7 @@ export function UserDetail({ user, currentUserId, userStatsSlot, view }: UserDet
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
