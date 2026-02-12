@@ -564,7 +564,7 @@ export async function getUserSubscriptionStatus(): Promise<'active' | 'canceled'
   return userData?.subscriptionStatus || 'none';
 }
 
-export async function getProSource(): Promise<'polar' | 'dodo' | 'none'> {
+export async function getProSource(): Promise<'polar' | 'dodo' | 'admin' | 'none'> {
   const userData = await getComprehensiveUserData();
   return userData?.proSource || 'none';
 }
