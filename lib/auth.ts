@@ -493,7 +493,7 @@ export const auth = betterAuth({
   ],
   events: {
     signUp: {
-      after: async ({ user, request }) => {
+      after: async ({ user, request }: { user: any; request: any }) => {
         try {
           console.log('🎯 SignUp event triggered for user:', user?.email, user?.name);
 
@@ -520,7 +520,7 @@ export const auth = betterAuth({
       },
     },
     signIn: {
-      after: async ({ user, request }) => {
+      after: async ({ user, request }: { user: any; request: any }) => {
         try {
           console.log('🎯 SignIn event triggered for user:', user?.email, user?.name);
 
