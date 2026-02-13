@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth';
+console.log('🛡️ lib/auth.ts initializing...');
 import { nextCookies } from 'better-auth/next-js';
 import { lastLoginMethod, magicLink } from 'better-auth/plugins';
 import {
@@ -179,7 +180,10 @@ async function handleSubscriptionWebhook(payload: any, status: string) {
 }
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://chat.ajcompany.me',
+  baseURL: process.env.BETTER_AUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
+      (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000')),
+  secret: process.env.BETTER_AUTH_SECRET,
   rateLimit: {
     max: 100,
     window: 60,
