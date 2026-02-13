@@ -20,7 +20,7 @@ const cache = new RedisDrizzleCache({
 export const maindb = drizzle({
   client: new Pool({
     connectionString: serverEnv.DATABASE_URL,
-    ssl: true,
+    ssl: { rejectUnauthorized: false },
   }),
   schema,
   cache,
@@ -29,7 +29,7 @@ export const maindb = drizzle({
 const dbread1 = drizzle({
   client: new Pool({
     connectionString: process.env.READ_DB_1,
-    ssl: true,
+    ssl: { rejectUnauthorized: false },
   }),
   schema,
   cache,
@@ -38,7 +38,7 @@ const dbread1 = drizzle({
 const dbread2 = drizzle({
   client: new Pool({
     connectionString: process.env.READ_DB_2,
-    ssl: true,
+    ssl: { rejectUnauthorized: false },
   }),
   schema,
   cache,
