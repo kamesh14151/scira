@@ -19,9 +19,8 @@ import {
 } from '@/lib/db/schema';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '@/lib/db';
-import { config } from 'dotenv';
 import { serverEnv } from '@/env/server';
-import { sendNewLoginEmail, sendWelcomeEmail } from '@/lib/email';
+import { sendNewLoginEmail, sendWelcomeEmail, sendMagicLinkEmail } from '@/lib/email';
 import { checkout, polar, portal, usage, webhooks } from '@polar-sh/better-auth';
 import { Polar } from '@polar-sh/sdk';
 import {
@@ -34,12 +33,6 @@ import DodoPayments from 'dodopayments';
 import { eq } from 'drizzle-orm';
 import { invalidateUserCaches } from './performance-cache';
 import { clearUserDataCache } from './user-data-server';
-import { Resend } from 'resend';
-
-config({
-  path: '.env.local',
-});
-
 // Utility function to safely parse dates
 function safeParseDate(value: string | Date | null | undefined): Date | null {
   if (!value) return null;
@@ -69,117 +62,6 @@ export const dodoPayments = new DodoPayments({
   ...(process.env.NODE_ENV === 'production' ? { environment: 'live_mode' } : { environment: 'test_mode' }),
 });
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Helper function to send magic link emails
-async function sendMagicLinkEmail(email: string, url: string) {
-  try {
-    const data = await resend.emails.send({
-      from: 'AJ <noreply@ajstudioz.co.in>',
-      to: [email],
-      subject: 'Sign in to AJ',
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-                line-height: 1.6;
-                color: #333;
-                margin: 0;
-                padding: 0;
-                background-color: #f4f4f4;
-              }
-              .container {
-                max-width: 600px;
-                margin: 40px auto;
-                background: white;
-                border-radius: 8px;
-                overflow: hidden;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-              }
-              .header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 40px 30px;
-                text-align: center;
-              }
-              .header h1 {
-                margin: 0;
-                color: white;
-                font-size: 28px;
-                font-weight: 600;
-              }
-              .content {
-                padding: 40px 30px;
-              }
-              .content p {
-                margin: 0 0 20px;
-                color: #555;
-              }
-              .button {
-                display: inline-block;
-                padding: 14px 32px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white !important;
-                text-decoration: none;
-                border-radius: 6px;
-                font-weight: 600;
-                text-align: center;
-                margin: 20px 0;
-              }
-              .button:hover {
-                opacity: 0.9;
-              }
-              .footer {
-                padding: 30px;
-                text-align: center;
-                color: #999;
-                font-size: 12px;
-                border-top: 1px solid #eee;
-              }
-              .link {
-                color: #667eea;
-                word-break: break-all;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1>Sign in to AJ</h1>
-              </div>
-              <div class="content">
-                <p>Hello!</p>
-                <p>You requested to sign in to your AJ account. Click the button below to continue:</p>
-                <div style="text-align: center;">
-                  <a href="${url}" class="button">Sign In to AJ</a>
-                </div>
-                <p>Or copy and paste this link into your browser:</p>
-                <p><a href="${url}" class="link">${url}</a></p>
-                <p>This link will expire in 15 minutes for security reasons.</p>
-                <p style="margin-top: 30px; font-size: 14px; color: #999;">
-                  If you didn't request this email, you can safely ignore it.
-                </p>
-              </div>
-              <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} AJ. All rights reserved.</p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `,
-    });
-
-    console.log('✅ Magic link email sent successfully:', data.data?.id);
-    return { success: true, id: data.data?.id };
-  } catch (error) {
-    console.error('❌ Failed to send magic link email:', error);
-    throw error;
-  }
-}
-
 // Helper function to handle subscription webhooks
 async function handleSubscriptionWebhook(payload: any, status: string) {
   try {
@@ -206,24 +88,24 @@ async function handleSubscriptionWebhook(payload: any, status: string) {
     const currentPeriodStart =
       safeParseDate(
         data.previous_billing_date ||
-          data.current_period_start ||
-          data.billing_cycle?.current_period_start ||
-          data.period_start,
+        data.current_period_start ||
+        data.billing_cycle?.current_period_start ||
+        data.period_start,
       ) || new Date(data.created_at);
 
     const currentPeriodEnd = safeParseDate(
       data.next_billing_date ||
-        data.current_period_end ||
-        data.billing_cycle?.current_period_end ||
-        data.period_end ||
-        data.next_payment_due_date,
+      data.current_period_end ||
+      data.billing_cycle?.current_period_end ||
+      data.period_end ||
+      data.next_payment_due_date,
     );
 
     const cancelAtPeriodEnd = parseBooleanFlag(
       data.cancel_at_next_billing_date ??
-        data.cancel_at_period_end ??
-        data.cancel_at_current_period_end ??
-        data.cancelled_at_period_end,
+      data.cancel_at_period_end ??
+      data.cancel_at_current_period_end ??
+      data.cancelled_at_period_end,
     );
 
     // Build subscription data
@@ -615,12 +497,12 @@ export const auth = betterAuth({
         try {
           console.log('🎯 SignUp event triggered for user:', user.email, user.name);
           console.log('📧 Attempting to send welcome email...');
-          
+
           const result = await sendWelcomeEmail({
             to: user.email,
             userName: user.name,
           });
-          
+
           if (result.success) {
             console.log('✅ Welcome email sent successfully! Email ID:', result.id);
           } else {
@@ -636,11 +518,11 @@ export const auth = betterAuth({
         try {
           console.log('🎯 SignIn event triggered for user:', user.email, user.name);
           console.log('📧 Attempting to send login notification...');
-          
+
           const userAgent = request?.headers?.get?.('user-agent') || 'Unknown browser';
-          const ip = request?.headers?.get?.('x-forwarded-for') || 
-                    request?.headers?.get?.('x-real-ip') || 'Unknown IP';
-          
+          const ip = request?.headers?.get?.('x-forwarded-for') ||
+            request?.headers?.get?.('x-real-ip') || 'Unknown IP';
+
           const result = await sendNewLoginEmail({
             to: user.email,
             userName: user.name,
@@ -649,7 +531,7 @@ export const auth = betterAuth({
             location: 'Unknown city, IN',
             browser: userAgent,
           });
-          
+
           if (result.success) {
             console.log('✅ Login notification sent successfully! Email ID:', result.id);
           } else {
