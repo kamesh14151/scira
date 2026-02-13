@@ -227,7 +227,14 @@ export const auth = betterAuth({
     lastLoginMethod(),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
-        await sendMagicLinkEmail(email, url);
+        console.log('🎯 MagicLink: sendMagicLink called for:', email);
+        try {
+          await sendMagicLinkEmail(email, url);
+          console.log('✅ MagicLink: sendMagicLinkEmail call completed');
+        } catch (error) {
+          console.error('❌ MagicLink: sendMagicLinkEmail failed:', error);
+          throw error;
+        }
       },
       expiresIn: 60 * 15, // 15 minutes
     }),
@@ -493,16 +500,22 @@ export const auth = betterAuth({
   ],
   events: {
     signUp: {
-      after: async ({ user, request }: { user: any; request: any }) => {
+      after: async (data: any, secondArg: any) => {
         try {
-          console.log('🎯 SignUp event triggered for user:', user?.email, user?.name);
+          console.log('🎯 SignUp event triggered');
+
+          // Support both object destructuring { user, session } and separate arguments (user, request)
+          const user = data?.user || (data?.email ? data : null);
+          const request = secondArg || data?.request;
+
+          console.log('DEBUG: Resolved user email:', user?.email);
 
           if (!user?.email) {
-            console.error('❌ Cannot send welcome email: user email is missing');
+            console.error('❌ Cannot send welcome email: user email is missing from event data');
             return;
           }
 
-          console.log('📧 Attempting to send welcome email...');
+          console.log('📧 Attempting to send welcome email to:', user.email);
 
           const result = await sendWelcomeEmail({
             to: user.email,
@@ -515,21 +528,27 @@ export const auth = betterAuth({
             console.error('❌ Welcome email failed:', result.error);
           }
         } catch (error) {
-          console.error('❌ Exception while sending welcome email:', error);
+          console.error('❌ Exception in signUp.after hook:', error);
         }
       },
     },
     signIn: {
-      after: async ({ user, request }: { user: any; request: any }) => {
+      after: async (data: any, secondArg: any) => {
         try {
-          console.log('🎯 SignIn event triggered for user:', user?.email, user?.name);
+          console.log('🎯 SignIn event triggered');
+
+          // Support both object destructuring { user, session } and separate arguments (user, request)
+          const user = data?.user || (data?.email ? data : null);
+          const request = secondArg || data?.request;
+
+          console.log('DEBUG: Resolved user email:', user?.email);
 
           if (!user?.email) {
-            console.error('❌ Cannot send login notification: user email is missing');
+            console.error('❌ Cannot send login notification: user email is missing from event data');
             return;
           }
 
-          console.log('📧 Attempting to send login notification...');
+          console.log('📧 Attempting to send login notification to:', user.email);
 
           const userAgent = request?.headers?.get?.('user-agent') || 'Unknown browser';
           const ip = request?.headers?.get?.('x-forwarded-for') ||
@@ -550,7 +569,7 @@ export const auth = betterAuth({
             console.error('❌ Login notification failed:', result.error);
           }
         } catch (error) {
-          console.error('❌ Exception while sending login notification:', error);
+          console.error('❌ Exception in signIn.after hook:', error);
         }
       },
     },
