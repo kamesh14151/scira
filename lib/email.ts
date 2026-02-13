@@ -4,10 +4,12 @@ import SearchCompletedEmail from '@/components/emails/lookout-completed';
 import NewLoginEmail from '@/components/emails/new-login';
 import WelcomeEmail from '@/components/emails/welcome';
 
-export const resend = serverEnv.RESEND_API_KEY ? new Resend(serverEnv.RESEND_API_KEY) : null;
+// Use serverEnv or fallback to process.env for robustness
+const apiKey = serverEnv.RESEND_API_KEY || process.env.RESEND_API_KEY;
+export const resend = apiKey ? new Resend(apiKey) : null;
 
 if (!resend) {
-  console.warn('⚠️⚠️⚠️ RESEND_API_KEY not configured! Email notifications will NOT be sent. ⚠️⚠️⚠️');
+  console.warn('⚠️⚠️⚠️ RESEND_API_KEY not found in serverEnv or process.env! Emails will NOT be sent. ⚠️⚠️⚠️');
 } else {
   console.log('✅ Resend email service initialized successfully');
 }
@@ -32,7 +34,7 @@ export async function sendLookoutCompletionEmail({
       error: 'Email service not configured',
     };
   }
-  
+
   try {
     const data = await resend.emails.send({
       from: 'AJ STUDIOZ <noreply@ajstudioz.co.in>',
@@ -80,7 +82,7 @@ export async function sendNewLoginEmail({
       error: 'Email service not configured',
     };
   }
-  
+
   try {
     const data = await resend.emails.send({
       from: 'AJ STUDIOZ Security <security@ajstudioz.co.in>',
@@ -119,7 +121,7 @@ export async function sendWelcomeEmail({ to, userName }: SendWelcomeEmailParams)
       error: 'Email service not configured',
     };
   }
-  
+
   try {
     const data = await resend.emails.send({
       from: 'AJ STUDIOZ <welcome@ajstudioz.co.in>',

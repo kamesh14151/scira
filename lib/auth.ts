@@ -493,14 +493,20 @@ export const auth = betterAuth({
   ],
   events: {
     signUp: {
-      after: async (user: any, request: any) => {
+      after: async ({ user, request }) => {
         try {
-          console.log('🎯 SignUp event triggered for user:', user.email, user.name);
+          console.log('🎯 SignUp event triggered for user:', user?.email, user?.name);
+
+          if (!user?.email) {
+            console.error('❌ Cannot send welcome email: user email is missing');
+            return;
+          }
+
           console.log('📧 Attempting to send welcome email...');
 
           const result = await sendWelcomeEmail({
             to: user.email,
-            userName: user.name,
+            userName: user.name || 'User',
           });
 
           if (result.success) {
@@ -514,9 +520,15 @@ export const auth = betterAuth({
       },
     },
     signIn: {
-      after: async (user: any, request: any) => {
+      after: async ({ user, request }) => {
         try {
-          console.log('🎯 SignIn event triggered for user:', user.email, user.name);
+          console.log('🎯 SignIn event triggered for user:', user?.email, user?.name);
+
+          if (!user?.email) {
+            console.error('❌ Cannot send login notification: user email is missing');
+            return;
+          }
+
           console.log('📧 Attempting to send login notification...');
 
           const userAgent = request?.headers?.get?.('user-agent') || 'Unknown browser';
@@ -525,7 +537,7 @@ export const auth = betterAuth({
 
           const result = await sendNewLoginEmail({
             to: user.email,
-            userName: user.name,
+            userName: user.name || 'User',
             loginTime: new Date().toUTCString(),
             ipAddress: ip,
             location: 'Unknown city, IN',
